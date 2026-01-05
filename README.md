@@ -143,9 +143,9 @@ This project is available for educational and portfolio purposes.
 
 ## 👤 Author
 
-**Aditya Dhiman**
+**Aditya Maisuriya**
 - GitHub: [@Adiie0001](https://github.com/Adiie0001)
-- Portfolio: [adiie0001.github.io](https://adiie0001.github.io)
+- Portfolio: [adityamaisuriya.pages.dev](https://adityamaisuriya.pages.dev/)
 
 ## 🤝 Contributing
 
