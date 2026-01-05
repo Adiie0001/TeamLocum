@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "zlegjqG1HBg=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\AD\\Desktop\\AD_RESUME\\AD_GITHUB_PORTFOLIO\\adiie0001.github.io\\BCA_MCA\\TeamLocum\\TeamLocum.Web\\TeamLocum.Web.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\AD\\.nuget\\packages\\microsoft.entityframeworkcore.tools\\10.0.1\\microsoft.entityframeworkcore.tools.10.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

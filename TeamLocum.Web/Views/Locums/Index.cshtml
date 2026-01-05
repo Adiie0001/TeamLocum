@@ -1,0 +1,31 @@
+@model IEnumerable<TeamLocum.Web.Models.Locum>
+
+@{
+    ViewData["Title"] = "Manage Locums";
+}
+
+<h1>Manage Locums</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>@item.User.FirstName @item.User.LastName</td>
+            <td>@item.User.Email</td>
+            <td>@item.Status</td>
+            <td>
+                <a asp-action="Approve" asp-route-id="@item.Id" class="btn btn-success btn-sm">Accept</a>
+                <a asp-action="Reject" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Reject</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
