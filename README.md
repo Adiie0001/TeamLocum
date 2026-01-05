@@ -111,6 +111,19 @@ TeamLocum/
 
 ## 🎯 Key Features Implementation
 
+### Automated Job Matching ⚡
+**Smart locum availability detection** powered by real-time conflict analysis:
+- **AJAX-Driven UI**: Dynamic dropdown updates as you select booking date/time
+- **Conflict Detection**: Prevents double-booking with interval overlap algorithm
+- **Visual Feedback**: Real-time status updates (✅ available / ⚠️ no matches)
+- **Intelligent Filtering**: Only shows locums without schedule conflicts
+
+When creating a booking, the system automatically:
+1. Queries all active locums
+2. Checks for existing bookings on the selected date
+3. Filters out locums with overlapping shifts
+4. Displays available candidates with GMC numbers
+
 ### Role-Based Access Control (RBAC)
 User roles are managed through the `UserType` field in `ApplicationUser`, enabling differentiated access across the platform.
 
@@ -123,6 +136,7 @@ Comprehensive shift management with:
 - Location specification
 - Hourly rate calculation
 - Assignment tracking
+- Auto-status updates ("Open" or "Filled")
 
 ## 🔧 Development
 
@@ -153,8 +167,7 @@ This is a portfolio project. Feel free to fork and adapt for your own use.
 
 ## 🚧 Future Enhancements
 
-- Advanced job matching algorithm
-- Real-time notifications
+- Real-time notifications (Email/SMS)
 - Mobile responsive design improvements
 - Integration with external credentialing systems (CARAS)
 - Payment processing integration
