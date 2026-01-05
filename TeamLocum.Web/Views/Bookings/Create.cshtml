@@ -9,7 +9,7 @@
 <h4>Booking</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -18,17 +18,17 @@
             </div>
             <div class="form-group">
                 <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" type="date" class="form-control" />
+                <input asp-for="Date" type="date" class="form-control" id="bookingDate" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" type="time" class="form-control" />
+                <input asp-for="StartTime" type="time" class="form-control" id="startTime" />
                 <span asp-validation-for="StartTime" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" type="time" class="form-control" />
+                <input asp-for="EndTime" type="time" class="form-control" id="endTime" />
                 <span asp-validation-for="EndTime" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -41,6 +41,16 @@
                 <input asp-for="Location" class="form-control" />
                 <span asp-validation-for="Location" class="text-danger"></span>
             </div>
+            
+            <!-- Automated Locum Selection -->
+            <div class="form-group">
+                <label asp-for="LocumId" class="control-label">Suggested Available Locums</label>
+                <select asp-for="LocumId" class="form-control" id="locumSelect">
+                    <option value="">-- Select Date & Time First --</option>
+                </select>
+                <small class="form-text text-muted" id="matchingStatus"></small>
+            </div>
+
             <div class="form-group">
                 <label asp-for="Notes" class="control-label"></label>
                 <textarea asp-for="Notes" class="form-control"></textarea>
@@ -56,3 +66,58 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts {
+    <script>
+        // Automated Job Matching: Fetch available locums when date/time changes
+        function fetchAvailableLocums() {
+            const date = document.getElementById('bookingDate').value;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            const locumSelect = document.getElementById('locumSelect');
+            const statusText = document.getElementById('matchingStatus');
+
+            if (!date || !startTime || !endTime) {
+                locumSelect.innerHTML = '<option value="">-- Select Date & Time First --</option>';
+                statusText.textContent = '';
+                return;
+            }
+
+            statusText.textContent = '🔍 Searching for available locums...';
+            locumSelect.innerHTML = '<option value="">Loading...</option>';
+
+            fetch(`/Bookings/GetAvailableLocums?date=${date}&startTime=${startTime}&endTime=${endTime}`)
+                .then(response => response.json())
+                .then(data => {
+                    locumSelect.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        locumSelect.innerHTML = '<option value="">❌ No locums available</option>';
+                        statusText.textContent = '⚠️ No available locums found for this time slot.';
+                        statusText.style.color = 'red';
+                    } else {
+                        locumSelect.innerHTML += '<option value="">-- Select a Locum --</option>';
+                        data.forEach(locum => {
+                            const option = document.createElement('option');
+                            option.value = locum.id;
+                            option.text = `${locum.name} (GMC: ${locum.gmcNumber})`;
+                            locumSelect.appendChild(option);
+                        });
+                        statusText.textContent = `✅ ${data.length} locum(s) available for this slot.`;
+                        statusText.style.color = 'green';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching locums:', error);
+                    locumSelect.innerHTML = '<option value="">Error loading locums</option>';
+                    statusText.textContent = '❌ Error loading available locums.';
+                    statusText.style.color = 'red';
+                });
+        }
+
+        // Attach event listeners
+        document.getElementById('bookingDate').addEventListener('change', fetchAvailableLocums);
+        document.getElementById('startTime').addEventListener('change', fetchAvailableLocums);
+        document.getElementById('endTime').addEventListener('change', fetchAvailableLocums);
+    </script>
+}
