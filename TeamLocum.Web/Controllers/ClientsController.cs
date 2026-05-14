@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TeamLocum.Web.Data;
@@ -5,6 +6,7 @@ using TeamLocum.Web.Models;
 
 namespace TeamLocum.Web.Controllers
 {
+    [Authorize]
     public class ClientsController : Controller
     {
         private readonly ApplicationDbContext _context;

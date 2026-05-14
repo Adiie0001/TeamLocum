@@ -1,268 +1,145 @@
-# 🏥 Team Locum - Healthcare Staffing Management System
+# 🏥 TeamLocum — Healthcare Staffing Management System
 
-![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-8.0-512BD4?style=flat-square&logo=.net)
-![C#](https://img.shields.io/badge/C%23-239120?style=flat-square&logo=c-sharp&logoColor=white)
-![Entity Framework](https://img.shields.io/badge/Entity%20Framework-512BD4?style=flat-square&logo=.net)
-![SQL Server](https://img.shields.io/badge/SQL%20Server-CC2927?style=flat-square&logo=microsoft-sql-server&logoColor=white)
-![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?style=flat-square&logo=bootstrap&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)
+[![.NET Build & Test](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml)
+![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core_MVC-9.0-512BD4?style=flat-square&logo=.net&logoColor=white)
+![EF Core](https://img.shields.io/badge/Entity_Framework_Core-9.0-512BD4?style=flat-square&logo=.net&logoColor=white)
+![SQL Server](https://img.shields.io/badge/SQL_Server-LocalDB-CC2927?style=flat-square&logo=microsoft-sql-server&logoColor=white)
+![Identity](https://img.shields.io/badge/ASP.NET_Identity-RBAC-green?style=flat-square)
 
-> A comprehensive **Healthcare Staffing Management System** designed to streamline locum doctor bookings for healthcare organizations. Built with **ASP.NET Core MVC**, featuring **automated job matching**, **RBAC**, and **real-time availability tracking**.
-
----
-
-## 📋 **Overview**
-
-Team Locum is a production-ready web application that bridges the gap between healthcare facilities and locum doctors. The system intelligently matches available medical professionals with shift requirements, preventing double-booking through real-time conflict detection.
-
-**Key Highlights:**
-- ✅ **Automated Job Matching** - Smart AI-powered locum suggestion system
-- ✅ **Role-Based Access Control** - Secure Admin, Client, and Locum portals
-- ✅ **Real-Time Availability** - AJAX-driven conflict detection
-- ✅ **Clean Architecture** - MVC pattern with Entity Framework Core
-- ✅ **Production Ready** - Comprehensive CRUD operations and workflows
+A production-grade **Healthcare Staffing Web Application** built with **ASP.NET Core MVC 9** that connects locum doctors with hospitals and clinics. Developed as MCA Capstone Project — designed to solve real NHS locum staffing challenges.
 
 ---
 
-## ✨ **Features**
+## 🚀 Features
 
-### **For Administrators**
-- ✅ **Account Management** - Review and approve/reject registrations
-- ✅ **Masquerade Mode** - Impersonate client accounts for support
-- ✅ **Holiday Master** - Manage public holidays for rate calculations
-- ✅ **System Oversight** - Monitor all bookings and user activities
-
-### **For Clients (Healthcare Organizations)**
-- ✅ **Job Posting** - Create booking requests with shift details
-- ✅ **Smart Matching** - View only available locums for selected time slots
-- ✅ **Booking Tracker** - Manage active and historical assignments
-- ✅ **Dashboard** - Real-time staffing overview
-
-### **For Locums (Medical Professionals)**
-- ✅ **Profile Management** - Maintain credentials and availability
-- ✅ **Job Opportunities** - Apply for suitable booking slots
-- ✅ **Schedule Tracking** - View confirmed and pending assignments
+- ✅ **ASP.NET Identity** — Role-based authentication (Admin / Client / Locum)
+- ✅ **Automated Job Matching** — Smart time-overlap detection prevents double-booking
+- ✅ **Booking Management** — Create, fill, and track healthcare staffing bookings
+- ✅ **Locum Management** — GMC number verification, approve/reject workflow
+- ✅ **Client Management** — Hospital onboarding with CARAS accreditation tracking
+- ✅ **Bank Holiday Awareness** — UK bank holidays tracked to avoid scheduling conflicts
+- ✅ **Auto Seed Data** — Demo users, hospitals, doctors, bookings on first run
+- ✅ **CI/CD** — GitHub Actions build & test pipeline
 
 ---
 
-## 🛠️ **Tech Stack**
+## 🛠️ Tech Stack
 
-| Technology | Purpose |
-|------------|---------|
-| **ASP.NET Core 8 MVC** | Web Application Framework |
-| **C#** | Programming Language |
-| **Entity Framework Core 8** | ORM for database operations |
-| **SQL Server (LocalDB)** | Development database |
-| **ASP.NET Core Identity** | Authentication & Authorization |
-| **Bootstrap 5** | Responsive UI framework |
-| **jQuery** | AJAX and DOM manipulation |
-
----
-
-## 📂 **Project Structure**
-
-```
-TeamLocum/
-├── TeamLocum.Web/
-│   ├── Controllers/          # MVC Controllers
-│   │   ├── ClientsController.cs      # Client account management
-│   │   ├── LocumsController.cs       # Locum account management
-│   │   ├── BookingsController.cs     # Booking CRUD + Matching API
-│   │   └── HolidaysController.cs     # Holiday management
-│   ├── Data/                 # Database Context
-│   │   └── ApplicationDbContext.cs   # EF Core DbContext
-│   ├── Models/               # Data Models
-│   │   └── Entities.cs              # ApplicationUser, Client, Locum, Booking, Holiday
-│   ├── Views/                # Razor Views
-│   │   ├── Clients/
-│   │   ├── Locums/
-│   │   ├── Bookings/
-│   │   └── Holidays/
-│   ├── wwwroot/              # Static Files (CSS, JS, libraries)
-│   └── Program.cs            # Application Entry Point
-└── TeamLocum.sln             # Solution File
-```
+| Layer | Technology |
+|-------|-----------|
+| Framework | ASP.NET Core MVC 9 |
+| Auth | ASP.NET Identity + RBAC |
+| ORM | Entity Framework Core 9 |
+| Database | SQL Server / LocalDB |
+| Frontend | Razor Views + Bootstrap 5 |
+| CI/CD | GitHub Actions |
 
 ---
 
-## 🚀 **Getting Started**
+## ⚡ Quick Start
 
-### **Prerequisites**
+### Prerequisites
+- [.NET 9 SDK](https://dotnet.microsoft.com/download)
+- SQL Server LocalDB (included with Visual Studio)
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (LocalDB or Express Edition)
-- [Visual Studio 2022](https://visualstudio.microsoft.com/) or [VS Code](https://code.visualstudio.com/)
+### Run Locally
 
-### **Installation**
-
-1️⃣ **Clone the repository**
 ```bash
 git clone https://github.com/Adiie0001/TeamLocum.git
 cd TeamLocum
-```
-
-2️⃣ **Configure Database Connection**
-
-Update the connection string in `TeamLocum.Web/appsettings.json`:
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=TeamLocumDb;Trusted_Connection=True;MultipleActiveResultSets=true"
-  }
-}
-```
-
-3️⃣ **Restore Dependencies**
-```bash
-cd TeamLocum.Web
 dotnet restore
+dotnet run --project TeamLocum.Web
 ```
 
-4️⃣ **Apply Database Migrations**
-```bash
-dotnet ef database update
-```
+Open browser: **http://localhost:5xxx**
 
-5️⃣ **Run the Application**
-```bash
-dotnet run
-```
+> 💡 Database is auto-created and seeded on first run — no manual migrations needed!
 
-6️⃣ **Access the Application**
+---
+
+## 🔑 Demo Credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| **Admin** | admin@teamlocum.com | Admin@123 |
+| **Hospital** | city.hospital@teamlocum.com | Client@123 |
+| **Doctor** | dr.sharma@teamlocum.com | Locum@123 |
+
+---
+
+## 🏗️ Project Structure
+
 ```
-https://localhost:5001
+TeamLocum/
+├── TeamLocum.sln
+└── TeamLocum.Web/
+    ├── Controllers/
+    │   ├── BookingsController.cs   # [Authorize] — booking CRUD + job matching
+    │   ├── ClientsController.cs    # [Authorize] — hospital management
+    │   ├── LocumsController.cs     # [Authorize] — doctor approve/reject
+    │   ├── HolidaysController.cs   # [Authorize] — UK bank holiday management
+    │   └── HomeController.cs       # Public — landing page
+    ├── Data/
+    │   ├── ApplicationDbContext.cs # IdentityDbContext with all entities
+    │   └── SeedData.cs             # Demo: Admin + 3 hospitals + 5 doctors + bookings
+    ├── Models/
+    │   └── Entities.cs             # ApplicationUser, Client, Locum, Booking, Holiday
+    ├── Views/                      # Razor views per controller
+    └── Program.cs                  # App configuration with Identity + Roles
 ```
 
 ---
 
-## 🎯 **Key Features Implementation**
+## 🧠 Core Algorithm — Automated Job Matching
 
-### **Automated Job Matching ⚡**
-**Smart locum availability detection** powered by real-time conflict analysis:
-- **AJAX-Driven UI**: Dynamic dropdown updates as you select booking date/time
-- **Conflict Detection**: Prevents double-booking with interval overlap algorithm
-- **Visual Feedback**: Real-time status updates (✅ available / ⚠️ no matches)
-- **Intelligent Filtering**: Only shows locums without schedule conflicts
+The booking system automatically finds available locums for any time slot by detecting **time overlaps**:
 
-**How It Works:**
-1. User selects Date, Start Time, and End Time for a booking
-2. JavaScript automatically calls `/Bookings/GetAvailableLocums` API
-3. Backend queries database for locums without conflicting bookings
-4. Available locums are displayed with their GMC numbers
-5. Booking status auto-updates ("Open" → "Filled")
-
-**Conflict Detection Algorithm:**
 ```csharp
-// Time overlap: (NewStart < ExistingEnd) AND (NewEnd > ExistingStart)
-if (newStartTime < existingBooking.EndTime && newEndTime > existingBooking.StartTime)
-{
-    return false; // Conflict found - exclude this locum
-}
-```
-
-### **Role-Based Access Control (RBAC)**
-User roles are managed through the `UserType` field in `ApplicationUser`, enabling differentiated access:
-- **Admin**: Full system access, account approval, masquerade capability
-- **Client**: Post jobs, manage bookings, select locums
-- **Locum**: Apply for jobs, manage availability, track assignments
-
-### **Account Approval Workflow**
-New client and locum registrations require admin approval before gaining full system access, ensuring quality control and verification.
-
-### **Comprehensive Booking Management**
-- Date and time selection with validation
-- Location specification and notes
-- Hourly rate calculation
-- Assignment tracking with status updates
-- Historical records and reporting
-
----
-
-## 🗄️ **Database Schema**
-
-### **Core Entities**
-- **ApplicationUser**: Extended Identity user with UserType, FirstName, LastName
-- **Client**: Healthcare organization with CompanyName, CarasId, AccreditationStatus
-- **Locum**: Medical professional with GmcNumber, ResumePath, Credentials
-- **Booking**: Shift details with Date, StartTime, EndTime, RatePerHour, Location, Status
-- **Holiday**: Public holiday master list for rate adjustments
-
----
-
-## 🔧 **Development**
-
-### **Adding New Migrations**
-```bash
-dotnet ef migrations add MigrationName
-dotnet ef database update
-```
-
-### **Building for Production**
-```bash
-dotnet publish -c Release -o ./publish
+// Conflict detection: (NewStart < ExistingEnd) AND (NewEnd > ExistingStart)
+var availableLocums = allLocums.Where(locum => {
+    var locumBookings = existingBookings.Where(b => b.LocumId == locum.Id);
+    foreach (var booking in locumBookings) {
+        if (start < booking.EndTime && end > booking.StartTime)
+            return false; // Conflict!
+    }
+    return true; // Available
+});
 ```
 
 ---
 
-## 📚 **Future Enhancements**
+## 👥 User Roles & Permissions
 
-- [ ] Real-time notifications (Email/SMS)
-- [ ] Mobile responsive design improvements
-- [ ] Integration with external credentialing systems (CARAS)
-- [ ] Payment processing integration
-- [ ] Reporting and analytics dashboard
-- [ ] API development for third-party integrations
-
----
-
-## 🤝 **Contributing**
-
-This is a portfolio project. Feel free to fork and adapt for your own use.
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+| Action | Admin | Client | Locum |
+|--------|-------|--------|-------|
+| View all bookings | ✅ | ✅ | ✅ |
+| Create booking | ✅ | ✅ | ❌ |
+| Approve locum | ✅ | ❌ | ❌ |
+| Manage holidays | ✅ | ❌ | ❌ |
+| View all clients | ✅ | ❌ | ❌ |
 
 ---
 
-## 📄 **License**
+## 🔮 Roadmap
 
-This project is licensed under the **MIT License** - feel free to use it for learning and commercial purposes.
-
----
-
-## 📞 **Connect With Me**
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://linkedin.com/in/aditya-maisuriya-39a540202)
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=flat-square&logo=github&logoColor=white)](https://github.com/Adiie0001)
-[![Email](https://img.shields.io/badge/Email-D14836?style=flat-square&logo=gmail&logoColor=white)](mailto:adiiimaisuriya94@gmail.com)
+- [ ] Doctor self-registration with GMC verification
+- [ ] Real-time booking notifications (SignalR)
+- [ ] Invoice generation (PDF)
+- [ ] Mobile-responsive dashboard upgrade
+- [ ] Docker Compose support
+- [ ] Azure deployment
 
 ---
 
-## 🎯 **About the Developer**
+## 📄 Background
 
-**Aditya Maisuriya** - Full-Stack ASP.NET Core & C# Developer  
-📍 Valsad, India  
-💼 2+ Years of Experience in Enterprise Applications  
-🚀 Specialized in SaaS & ERP Solutions  
-⚡ Achieved 99.9% uptime on production systems
+Built as MCA Capstone Project at **VNSGU, Surat**. The application models the real UK NHS locum staffing workflow — hospitals post shifts, doctors apply, administrators manage the matching process — all with proper role-based access control.
 
 ---
 
-## 🌟 **Project Stats**
+## 👨‍💻 Author
 
-- **Lines of Code:** 2,000+
-- **Controllers:** 4 (Clients, Locums, Bookings, Holidays)
-- **API Endpoints:** 10+
-- **Database Entities:** 5
-- **Features:** RBAC, Automated Matching, AJAX, Identity
-
----
-
-⭐ **If you find this project useful, please star it!** ⭐
-
----
-
-**Note**: This project was recreated from documentation as part of a portfolio demonstration of ASP.NET Core MVC development capabilities.
+**Aditya Maisuriya** — ASP.NET Core Developer
+- 🌐 Portfolio: [adityamaisuriya.pages.dev](https://adityamaisuriya.pages.dev)
+- 💼 LinkedIn: [linkedin.com/in/aditya-maisuriya-39a540202](https://linkedin.com/in/aditya-maisuriya-39a540202)
+- 📧 Email: adiiimaisuriya94@gmail.com
