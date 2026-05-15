@@ -1,3 +1,9 @@
 
 # SQLite DB file
 *.db
+
+bin/
+obj/
+run_logs.txt
+run_err.txt
+clean.py
