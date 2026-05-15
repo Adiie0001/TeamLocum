@@ -5,10 +5,10 @@ using TeamLocum.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Database
+// Database - SQLite (works on any machine, no SQL Server needed)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // ✅ ASP.NET Identity with Roles support
