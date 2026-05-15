@@ -3,7 +3,7 @@
 [![.NET Build & Test](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml)
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core_MVC-9.0-512BD4?style=flat-square&logo=.net&logoColor=white)
 ![EF Core](https://img.shields.io/badge/Entity_Framework_Core-9.0-512BD4?style=flat-square&logo=.net&logoColor=white)
-![SQL Server](https://img.shields.io/badge/SQL_Server-LocalDB-CC2927?style=flat-square&logo=microsoft-sql-server&logoColor=white)
+![SQL Server](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white)
 ![Identity](https://img.shields.io/badge/ASP.NET_Identity-RBAC-green?style=flat-square)
 
 A production-grade **Healthcare Staffing Web Application** built with **ASP.NET Core MVC 9** that connects locum doctors with hospitals and clinics. Developed as MCA Capstone Project — designed to solve real NHS locum staffing challenges.
@@ -30,7 +30,7 @@ A production-grade **Healthcare Staffing Web Application** built with **ASP.NET 
 | Framework | ASP.NET Core MVC 9 |
 | Auth | ASP.NET Identity + RBAC |
 | ORM | Entity Framework Core 9 |
-| Database | SQL Server / LocalDB |
+| Database | SQLite |
 | Frontend | Razor Views + Bootstrap 5 |
 | CI/CD | GitHub Actions |
 
@@ -40,7 +40,7 @@ A production-grade **Healthcare Staffing Web Application** built with **ASP.NET 
 
 ### Prerequisites
 - [.NET 9 SDK](https://dotnet.microsoft.com/download)
-- SQL Server LocalDB (included with Visual Studio)
+- No DB installation required (SQLite auto-creates)
 
 ### Run Locally
 
@@ -51,7 +51,7 @@ dotnet restore
 dotnet run --project TeamLocum.Web
 ```
 
-Open browser: **http://localhost:5xxx**
+Open browser: **http://localhost:5115**
 
 > 💡 Database is auto-created and seeded on first run — no manual migrations needed!
 
