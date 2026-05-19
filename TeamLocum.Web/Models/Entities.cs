@@ -18,10 +18,10 @@ namespace TeamLocum.Web.Models
         public int Id { get; set; }
         
         [ForeignKey("User")]
-        public string UserId { get; set; }
-        public ApplicationUser User { get; set; }
+        public required string UserId { get; set; }
+        public ApplicationUser User { get; set; } = null!;
 
-        public string CompanyName { get; set; }
+        public required string CompanyName { get; set; }
         public string? CarasId { get; set; }
         public string Status { get; set; } = "Awaiting Review";
         public bool IsAccredited { get; set; }
@@ -33,8 +33,8 @@ namespace TeamLocum.Web.Models
         public int Id { get; set; }
 
         [ForeignKey("User")]
-        public string UserId { get; set; }
-        public ApplicationUser User { get; set; }
+        public required string UserId { get; set; }
+        public ApplicationUser User { get; set; } = null!;
 
         public string? CarasId { get; set; }
         public string Status { get; set; } = "Active";
@@ -48,7 +48,7 @@ namespace TeamLocum.Web.Models
         public int Id { get; set; }
 
         public int ClientId { get; set; }
-        public Client Client { get; set; }
+        public Client Client { get; set; } = null!;
 
         public int? LocumId { get; set; }
         public Locum? Locum { get; set; }
@@ -60,8 +60,8 @@ namespace TeamLocum.Web.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal RatePerHour { get; set; }
         
-        public string Location { get; set; }
-        public string Status { get; set; } = "Open"; // Open, Filled, Completed, Cancelled
+        public required string Location { get; set; }
+        public string Status { get; set; } = "Open";
         public string? Notes { get; set; }
     }
 
@@ -70,6 +70,6 @@ namespace TeamLocum.Web.Models
         [Key]
         public int Id { get; set; }
         public DateTime Date { get; set; }
-        public string Details { get; set; }
+        public required string Details { get; set; }
     }
 }

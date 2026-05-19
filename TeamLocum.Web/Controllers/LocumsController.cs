@@ -48,9 +48,7 @@ public IActionResult Create()
             return View();
         }
 
-        // POST: DummyLocums/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Locums/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserId,CarasId,Status,ResumePath,GmcNumber")] Locum locum)
@@ -61,11 +59,11 @@ public IActionResult Create()
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", locum.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", locum.UserId);
             return View(locum);
         }
 
-        // GET: DummyLocums/Edit/5
+        // GET: Locums/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -78,13 +76,11 @@ public IActionResult Create()
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", locum.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", locum.UserId);
             return View(locum);
         }
 
-        // POST: DummyLocums/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Locums/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,CarasId,Status,ResumePath,GmcNumber")] Locum locum)
@@ -114,11 +110,11 @@ public IActionResult Create()
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", locum.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", locum.UserId);
             return View(locum);
         }
 
-        // GET: DummyLocums/Delete/5
+        // GET: Locums/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -137,7 +133,7 @@ public IActionResult Create()
             return View(locum);
         }
 
-        // POST: DummyLocums/Delete/5
+        // POST: Locums/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

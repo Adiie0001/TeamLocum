@@ -108,7 +108,7 @@ public async Task<IActionResult> Details(int? id)
             return View(booking);
         }
 
-        // GET: DummyBookings/Edit/5
+        // GET: Bookings/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -121,14 +121,12 @@ public async Task<IActionResult> Details(int? id)
             {
                 return NotFound();
             }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Id", booking.ClientId);
-            ViewData["LocumId"] = new SelectList(_context.Locums, "Id", "Id", booking.LocumId);
+            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", booking.ClientId);
+            ViewData["LocumId"] = new SelectList(_context.Locums, "Id", "GmcNumber", booking.LocumId);
             return View(booking);
         }
 
-        // POST: DummyBookings/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Bookings/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ClientId,LocumId,Date,StartTime,EndTime,RatePerHour,Location,Status,Notes")] Booking booking)
@@ -158,12 +156,12 @@ public async Task<IActionResult> Details(int? id)
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Id", booking.ClientId);
-            ViewData["LocumId"] = new SelectList(_context.Locums, "Id", "Id", booking.LocumId);
+            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", booking.ClientId);
+            ViewData["LocumId"] = new SelectList(_context.Locums, "Id", "GmcNumber", booking.LocumId);
             return View(booking);
         }
 
-        // GET: DummyBookings/Delete/5
+        // GET: Bookings/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -183,7 +181,7 @@ public async Task<IActionResult> Details(int? id)
             return View(booking);
         }
 
-        // POST: DummyBookings/Delete/5
+        // POST: Bookings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

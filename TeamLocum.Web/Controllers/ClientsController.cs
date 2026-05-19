@@ -76,9 +76,7 @@ public async Task<IActionResult> Details(int? id)
             return View();
         }
 
-        // POST: DummyClients/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Clients/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserId,CompanyName,CarasId,Status,IsAccredited")] Client client)
@@ -89,11 +87,11 @@ public async Task<IActionResult> Details(int? id)
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", client.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", client.UserId);
             return View(client);
         }
 
-        // GET: DummyClients/Edit/5
+        // GET: Clients/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -106,13 +104,11 @@ public async Task<IActionResult> Details(int? id)
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", client.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", client.UserId);
             return View(client);
         }
 
-        // POST: DummyClients/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Clients/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,CompanyName,CarasId,Status,IsAccredited")] Client client)
@@ -146,7 +142,7 @@ public async Task<IActionResult> Details(int? id)
             return View(client);
         }
 
-        // GET: DummyClients/Delete/5
+        // GET: Clients/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -165,7 +161,7 @@ public async Task<IActionResult> Details(int? id)
             return View(client);
         }
 
-        // POST: DummyClients/Delete/5
+        // POST: Clients/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
