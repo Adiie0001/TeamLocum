@@ -1,5 +1,3 @@
-﻿> **Note:** This is a **Portfolio Project** built to demonstrate .NET MVC development skills and EF Core. It is currently parked and not under active feature development.
-
 # 🏥 TeamLocum — Healthcare Staffing Management System
 
 [![.NET Build & Test](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml)
