@@ -9,25 +9,26 @@
         @if (User.IsInRole("Admin"))
         {
             <p class="mb-2">You are logged in as <strong>Admin</strong>. You have full access to manage hospitals, doctors, bookings, and bank holidays.</p>
-            <a asp-controller="Bookings" asp-action="Index" class="btn btn-primary me-2">View Bookings</a>
-            <a asp-controller="Clients" asp-action="Index" class="btn btn-outline-primary me-2">Manage Hospitals</a>
-            <a asp-controller="Locums" asp-action="Index" class="btn btn-outline-primary">Manage Doctors</a>
+            <a asp-controller="Bookings" asp-action="Index" class="btn btn-primary me-2"><i class="bi bi-card-list me-1"></i>View Bookings</a>
+            <a asp-controller="Clients" asp-action="Index" class="btn btn-outline-primary me-2"><i class="bi bi-building me-1"></i>Manage Hospitals</a>
+            <a asp-controller="Locums" asp-action="Index" class="btn btn-outline-primary"><i class="bi bi-people me-1"></i>Manage Doctors</a>
         }
         else if (User.IsInRole("Client"))
         {
             <p class="mb-2">You are logged in as <strong>Hospital</strong>. You can view and manage your staffing bookings.</p>
-            <a asp-controller="Bookings" asp-action="Index" class="btn btn-primary me-2">View Bookings</a>
-            <a asp-controller="Locums" asp-action="Index" class="btn btn-outline-primary">Find Doctors</a>
+            <a asp-controller="Bookings" asp-action="Index" class="btn btn-primary me-2"><i class="bi bi-card-list me-1"></i>View Bookings</a>
+            <a asp-controller="Locums" asp-action="Index" class="btn btn-outline-primary"><i class="bi bi-search me-1"></i>Find Doctors</a>
         }
         else if (User.IsInRole("Locum"))
         {
             <p class="mb-2">You are logged in as <strong>Locum Doctor</strong>. You can view available shifts and manage your schedule.</p>
-            <a asp-controller="Bookings" asp-action="Index" class="btn btn-primary">View My Shifts</a>
+            <a asp-controller="Bookings" asp-action="Index" class="btn btn-primary"><i class="bi bi-calendar2-week me-1"></i>View My Shifts</a>
         }
     </div>
 }
 
 <div class="px-4 py-5 my-2 text-center">
+    <div class="fs-1 mb-3 text-primary"><i class="bi bi-heart-pulse-fill"></i></div>
     <h1 class="display-5 fw-bold text-body-emphasis">TeamLocum</h1>
     <div class="col-lg-6 mx-auto">
         <p class="lead mb-4">
@@ -45,6 +46,7 @@
     <div class="col">
         <div class="card h-100 border-primary">
             <div class="card-body text-center">
+                <div class="fs-2 mb-2 text-primary"><i class="bi bi-person-badge"></i></div>
                 <h5 class="card-title">Locum Doctors</h5>
                 <p class="card-text text-muted">Browse available shifts, apply for bookings, manage your schedule with zero double-booking thanks to automated conflict detection.</p>
             </div>
@@ -53,6 +55,7 @@
     <div class="col">
         <div class="card h-100 border-success">
             <div class="card-body text-center">
+                <div class="fs-2 mb-2 text-success"><i class="bi bi-hospital"></i></div>
                 <h5 class="card-title">Hospitals & Clinics</h5>
                 <p class="card-text text-muted">Post shifts, review doctor applications, manage bookings, and track CARAS accreditation status — all in one place.</p>
             </div>
@@ -61,6 +64,7 @@
     <div class="col">
         <div class="card h-100 border-danger">
             <div class="card-body text-center">
+                <div class="fs-2 mb-2 text-danger"><i class="bi bi-shield-lock"></i></div>
                 <h5 class="card-title">Role-Based Access</h5>
                 <p class="card-text text-muted">3 roles (Admin / Hospital / Doctor) powered by ASP.NET Identity. Each role sees only what they need — no data leaks.</p>
             </div>
