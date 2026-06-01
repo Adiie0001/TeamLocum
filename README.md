@@ -1,4 +1,4 @@
-﻿# TeamLocum — Healthcare Staffing Management System
+# TeamLocum — Healthcare Staffing Management System
 
 [![.NET Build & Test](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml)
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core_MVC-9.0-512BD4?style=flat-square&logo=.net&logoColor=white)
@@ -36,7 +36,7 @@ A production-grade **Healthcare Staffing Web Application** built with **ASP.NET 
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 ### Prerequisites
 - [.NET 9 SDK](https://dotnet.microsoft.com/download)
@@ -57,7 +57,7 @@ Open browser: **http://localhost:5115**
 
 ---
 
-## 🔑 Demo Credentials
+## Demo Credentials
 
 | Role | Email | Password |
 |------|-------|----------|
@@ -90,7 +90,7 @@ TeamLocum/
 
 ---
 
-## 🧠 Core Algorithm — Automated Job Matching
+## Core Algorithm — Automated Job Matching
 
 The booking system automatically finds available locums for any time slot by detecting **time overlaps**:
 
@@ -108,7 +108,7 @@ var availableLocums = allLocums.Where(locum => {
 
 ---
 
-## 👥 User Roles & Permissions
+## User Roles & Permissions
 
 | Action | Admin | Client | Locum |
 |--------|-------|--------|-------|
@@ -131,7 +131,7 @@ var availableLocums = allLocums.Where(locum => {
 
 ---
 
-## 📄 Background
+## Background
 
 Built as MCA Capstone Project at **VNSGU, Surat**. The application models the real UK NHS locum staffing workflow — hospitals post shifts, doctors apply, administrators manage the matching process — all with proper role-based access control.
 
