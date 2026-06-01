@@ -83,7 +83,7 @@
                 return;
             }
 
-            statusText.textContent = '✨ AI Engine is analyzing locum profiles...';
+            statusText.textContent = '[AI Processing] Analyzing locum profiles...';
             locumSelect.innerHTML = '<option value="">Loading...</option>';
 
             fetch(`/Bookings/GetAvailableLocums?date=${date}&startTime=${startTime}&endTime=${endTime}`)
@@ -92,8 +92,8 @@
                     locumSelect.innerHTML = '';
                     
                     if (data.length === 0) {
-                        locumSelect.innerHTML = '<option value="">❌ No locums available</option>';
-                        statusText.textContent = '⚠️ No available locums found for this time slot.';
+                        locumSelect.innerHTML = '<option value="">-- No locums available --</option>';
+                        statusText.textContent = 'Alert: No available locums found for this time slot.';
                         statusText.style.color = 'red';
                     } else {
                         locumSelect.innerHTML += '<option value="">-- Select a Locum --</option>';
@@ -106,14 +106,14 @@
                             option.title = locum.aiReasoning;
                             locumSelect.appendChild(option);
                         });
-                        statusText.textContent = `✨ AI Match Complete: ${data.length} locum(s) found and ranked by compatibility score!`;
+                        statusText.textContent = `[AI Match Complete]: ${data.length} locum(s) found and ranked by compatibility score.`;
                         statusText.style.color = '#2563eb';
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching locums:', error);
                     locumSelect.innerHTML = '<option value="">Error loading locums</option>';
-                    statusText.textContent = '❌ Error loading available locums.';
+                    statusText.textContent = 'Error: Failed to load available locums.';
                     statusText.style.color = 'red';
                 });
         }
