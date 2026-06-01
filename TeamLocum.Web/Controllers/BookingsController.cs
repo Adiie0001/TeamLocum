@@ -11,10 +11,12 @@ namespace TeamLocum.Web.Controllers
     public class BookingsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly TeamLocum.Web.Services.IAiMatchingService _aiMatchingService;
 
-        public BookingsController(ApplicationDbContext context)
+        public BookingsController(ApplicationDbContext context, TeamLocum.Web.Services.IAiMatchingService aiMatchingService)
         {
             _context = context;
+            _aiMatchingService = aiMatchingService;
         }
 
         public async Task<IActionResult> Index()
@@ -66,7 +68,7 @@ namespace TeamLocum.Web.Controllers
                 .ToListAsync();
 
             // Filter out locums with conflicting bookings
-            var availableLocums = allLocums.Where(locum =>
+            var conflictFreeLocums = allLocums.Where(locum =>
             {
                 var locumBookings = existingBookings.Where(b => b.LocumId == locum.Id);
                 
@@ -79,11 +81,22 @@ namespace TeamLocum.Web.Controllers
                     }
                 }
                 return true; // No conflicts
-            }).Select(l => new
-            {
-                id = l.Id,
-                name = $"{l.User.FirstName} {l.User.LastName}",
-                gmcNumber = l.GmcNumber ?? "N/A"
+            }).ToList();
+
+            // Run conflict-free locums through AI Matching Service
+            // Dummy notes and location for the API endpoint (in a real scenario, these would come from the frontend input)
+            var aiResults = await _aiMatchingService.CalculateMatchScoresAsync(conflictFreeLocums, "General ward coverage", "Main Hospital");
+
+            var availableLocums = aiResults.Select(r => {
+                var l = conflictFreeLocums.First(locum => locum.Id == r.LocumId);
+                return new
+                {
+                    id = l.Id,
+                    name = $"{l.User.FirstName} {l.User.LastName}",
+                    gmcNumber = l.GmcNumber ?? "N/A",
+                    aiScore = r.MatchScore,
+                    aiReasoning = r.MatchReasoning
+                };
             }).ToList();
 
             return Json(availableLocums);

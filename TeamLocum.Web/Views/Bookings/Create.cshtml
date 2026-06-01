@@ -83,7 +83,7 @@
                 return;
             }
 
-            statusText.textContent = '🔍 Searching for available locums...';
+            statusText.textContent = '✨ AI Engine is analyzing locum profiles...';
             locumSelect.innerHTML = '<option value="">Loading...</option>';
 
             fetch(`/Bookings/GetAvailableLocums?date=${date}&startTime=${startTime}&endTime=${endTime}`)
@@ -100,11 +100,14 @@
                         data.forEach(locum => {
                             const option = document.createElement('option');
                             option.value = locum.id;
-                            option.text = `${locum.name} (GMC: ${locum.gmcNumber})`;
+                            // Display the AI Score!
+                            option.text = `[AI Score: ${locum.aiScore}%] ${locum.name} (GMC: ${locum.gmcNumber})`;
+                            // Add reasoning as a title attribute (tooltip)
+                            option.title = locum.aiReasoning;
                             locumSelect.appendChild(option);
                         });
-                        statusText.textContent = `✅ ${data.length} locum(s) available for this slot.`;
-                        statusText.style.color = 'green';
+                        statusText.textContent = `✨ AI Match Complete: ${data.length} locum(s) found and ranked by compatibility score!`;
+                        statusText.style.color = '#2563eb';
                     }
                 })
                 .catch(error => {

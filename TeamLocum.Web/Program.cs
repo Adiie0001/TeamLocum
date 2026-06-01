@@ -23,6 +23,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<TeamLocum.Web.Services.IAiMatchingService, TeamLocum.Web.Services.SimulatedAiMatchingService>();
 
 var app = builder.Build();
 
