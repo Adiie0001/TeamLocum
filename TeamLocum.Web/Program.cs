@@ -11,7 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// ✅ ASP.NET Identity with Roles support
+// ASP.NET Identity with Roles support
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -44,7 +44,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-// ✅ Authentication MUST come before Authorization
+// Authentication MUST come before Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 

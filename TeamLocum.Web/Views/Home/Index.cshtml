@@ -5,7 +5,7 @@
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
     <div class="p-4 mb-4 bg-success bg-opacity-10 border border-success rounded-3">
-        <h4 class="text-success">✅ Welcome back, @User.Identity.Name!</h4>
+        <h4 class="text-success">Welcome back, @User.Identity.Name!</h4>
         @if (User.IsInRole("Admin"))
         {
             <p class="mb-2">You are logged in as <strong>Admin</strong>. You have full access to manage hospitals, doctors, bookings, and bank holidays.</p>
