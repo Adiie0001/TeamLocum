@@ -1,4 +1,4 @@
-# 🏥 TeamLocum — Healthcare Staffing Management System
+﻿# TeamLocum — Healthcare Staffing Management System
 
 [![.NET Build & Test](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml)
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core_MVC-9.0-512BD4?style=flat-square&logo=.net&logoColor=white)
@@ -10,20 +10,20 @@ A production-grade **Healthcare Staffing Web Application** built with **ASP.NET 
 
 ---
 
-## 🚀 Features
+## Features
 
-- ✅ **ASP.NET Identity** — Role-based authentication (Admin / Client / Locum)
-- ✅ **Automated Job Matching** — Smart time-overlap detection prevents double-booking
-- ✅ **Booking Management** — Create, fill, and track healthcare staffing bookings
-- ✅ **Locum Management** — GMC number verification, approve/reject workflow
-- ✅ **Client Management** — Hospital onboarding with CARAS accreditation tracking
-- ✅ **Bank Holiday Awareness** — UK bank holidays tracked to avoid scheduling conflicts
-- ✅ **Auto Seed Data** — Demo users, hospitals, doctors, bookings on first run
-- ✅ **CI/CD** — GitHub Actions build & test pipeline
+- [x] **ASP.NET Identity** — Role-based authentication (Admin / Client / Locum)
+- [x] **Automated Job Matching** — Smart time-overlap detection prevents double-booking
+- [x] **Booking Management** — Create, fill, and track healthcare staffing bookings
+- [x] **Locum Management** — GMC number verification, approve/reject workflow
+- [x] **Client Management** — Hospital onboarding with CARAS accreditation tracking
+- [x] **Bank Holiday Awareness** — UK bank holidays tracked to avoid scheduling conflicts
+- [x] **Auto Seed Data** — Demo users, hospitals, doctors, bookings on first run
+- [x] **CI/CD** — GitHub Actions build & test pipeline
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -53,7 +53,7 @@ dotnet run --project TeamLocum.Web
 
 Open browser: **http://localhost:5115**
 
-> 💡 Database is auto-created and seeded on first run — no manual migrations needed!
+> Database is auto-created and seeded on first run — no manual migrations needed!
 
 ---
 
@@ -67,25 +67,25 @@ Open browser: **http://localhost:5115**
 
 ---
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 TeamLocum/
 ├── TeamLocum.sln
 └── TeamLocum.Web/
-    ├── Controllers/
-    │   ├── BookingsController.cs   # [Authorize] — booking CRUD + job matching
-    │   ├── ClientsController.cs    # [Authorize] — hospital management
-    │   ├── LocumsController.cs     # [Authorize] — doctor approve/reject
-    │   ├── HolidaysController.cs   # [Authorize] — UK bank holiday management
-    │   └── HomeController.cs       # Public — landing page
-    ├── Data/
-    │   ├── ApplicationDbContext.cs # IdentityDbContext with all entities
-    │   └── SeedData.cs             # Demo: Admin + 3 hospitals + 5 doctors + bookings
-    ├── Models/
-    │   └── Entities.cs             # ApplicationUser, Client, Locum, Booking, Holiday
-    ├── Views/                      # Razor views per controller
-    └── Program.cs                  # App configuration with Identity + Roles
+ ├── Controllers/
+ │ ├── BookingsController.cs # [Authorize] — booking CRUD + job matching
+ │ ├── ClientsController.cs # [Authorize] — hospital management
+ │ ├── LocumsController.cs # [Authorize] — doctor approve/reject
+ │ ├── HolidaysController.cs # [Authorize] — UK bank holiday management
+ │ └── HomeController.cs # Public — landing page
+ ├── Data/
+ │ ├── ApplicationDbContext.cs # IdentityDbContext with all entities
+ │ └── SeedData.cs # Demo: Admin + 3 hospitals + 5 doctors + bookings
+ ├── Models/
+ │ └── Entities.cs # ApplicationUser, Client, Locum, Booking, Holiday
+ ├── Views/ # Razor views per controller
+ └── Program.cs # App configuration with Identity + Roles
 ```
 
 ---
@@ -97,12 +97,12 @@ The booking system automatically finds available locums for any time slot by det
 ```csharp
 // Conflict detection: (NewStart < ExistingEnd) AND (NewEnd > ExistingStart)
 var availableLocums = allLocums.Where(locum => {
-    var locumBookings = existingBookings.Where(b => b.LocumId == locum.Id);
-    foreach (var booking in locumBookings) {
-        if (start < booking.EndTime && end > booking.StartTime)
-            return false; // Conflict!
-    }
-    return true; // Available
+ var locumBookings = existingBookings.Where(b => b.LocumId == locum.Id);
+ foreach (var booking in locumBookings) {
+ if (start < booking.EndTime && end > booking.StartTime)
+ return false; // Conflict!
+ }
+ return true; // Available
 });
 ```
 
@@ -112,15 +112,15 @@ var availableLocums = allLocums.Where(locum => {
 
 | Action | Admin | Client | Locum |
 |--------|-------|--------|-------|
-| View all bookings | ✅ | ✅ | ✅ |
-| Create booking | ✅ | ✅ | ❌ |
-| Approve locum | ✅ | ❌ | ❌ |
-| Manage holidays | ✅ | ❌ | ❌ |
-| View all clients | ✅ | ❌ | ❌ |
+| View all bookings | [x] | [x] | [x] |
+| Create booking | [x] | [x] | [ ] |
+| Approve locum | [x] | [ ] | [ ] |
+| Manage holidays | [x] | [ ] | [ ] |
+| View all clients | [x] | [ ] | [ ] |
 
 ---
 
-## 🔮 Roadmap
+## Roadmap
 
 - [ ] Doctor self-registration with GMC verification
 - [ ] Real-time booking notifications (SignalR)
@@ -137,9 +137,10 @@ Built as MCA Capstone Project at **VNSGU, Surat**. The application models the re
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Aditya Maisuriya** — ASP.NET Core Developer
-- 🌐 Portfolio: [adityamaisuriya.pages.dev](https://adityamaisuriya.pages.dev)
-- 💼 LinkedIn: [linkedin.com/in/aditya-maisuriya-39a540202](https://linkedin.com/in/aditya-maisuriya-39a540202)
-- 📧 Email: adiiimaisuriya94@gmail.com
+- Portfolio: [adityamaisuriya.pages.dev](https://adityamaisuriya.pages.dev)
+- LinkedIn: [linkedin.com/in/aditya-maisuriya-39a540202](https://linkedin.com/in/aditya-maisuriya-39a540202)
+- Email: adiiimaisuriya94@gmail.com
+
