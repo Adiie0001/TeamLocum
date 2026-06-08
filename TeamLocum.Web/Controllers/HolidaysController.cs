@@ -21,6 +21,7 @@ namespace TeamLocum.Web.Controllers
             return View(await _context.Holidays.ToListAsync());
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -28,6 +29,7 @@ namespace TeamLocum.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Date,Details")] Holiday holiday)
         {
             if (ModelState.IsValid)
