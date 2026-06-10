@@ -155,7 +155,7 @@ Built as MCA Capstone Project at **VNSGU, Surat**. The application models the re
 
 ## Author
 
-**Aditya Maisuriya** — ASP.NET Core Developer
+**Aditya Maisuriya** — AI Integration Engineer
 - Portfolio: [adityamaisuriya.pages.dev](https://adityamaisuriya.pages.dev)
 - LinkedIn: [linkedin.com/in/aditya-maisuriya-39a540202](https://linkedin.com/in/aditya-maisuriya-39a540202)
 - Email: adiiimaisuriya94@gmail.com
