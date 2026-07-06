@@ -1,4 +1,4 @@
-# TeamLocum — Healthcare Staffing Management System
+﻿# TeamLocum â€” Healthcare Staffing Management System
 
 [![.NET Build & Test](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml)
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core_MVC-9.0-512BD4?style=flat-square&logo=.net&logoColor=white)
@@ -6,20 +6,20 @@
 ![SQL Server](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white)
 ![Identity](https://img.shields.io/badge/ASP.NET_Identity-RBAC-green?style=flat-square)
 
-A production-grade **Healthcare Staffing Web Application** built with **ASP.NET Core MVC 9** that connects locum doctors with hospitals and clinics. Developed as MCA Capstone Project — designed to solve real NHS locum staffing challenges.
+A production-grade **Healthcare Staffing Web Application** built with **ASP.NET Core MVC 9** that connects locum doctors with hospitals and clinics. Developed as MCA Capstone Project â€” designed to solve real NHS locum staffing challenges.
 
 ---
 
 ## Features
 
-- [x] **ASP.NET Identity** — Role-based authentication (Admin / Client / Locum)
-- [x] **AI-Powered Job Matching** — Token-efficient heuristic matching and time-overlap detection
-- [x] **Booking Management** — Create, fill, and track healthcare staffing bookings
-- [x] **Locum Management** — GMC number verification, approve/reject workflow
-- [x] **Client Management** — Hospital onboarding with CARAS accreditation tracking
-- [x] **Bank Holiday Awareness** — UK bank holidays tracked to avoid scheduling conflicts
-- [x] **Auto Seed Data** — Demo users, hospitals, doctors, bookings on first run
-- [x] **CI/CD** — GitHub Actions build & test pipeline
+- [x] **ASP.NET Identity** â€” Role-based authentication (Admin / Client / Locum)
+- [x] **AI-Powered Job Matching** â€” Token-efficient heuristic matching and time-overlap detection
+- [x] **Booking Management** â€” Create, fill, and track healthcare staffing bookings
+- [x] **Locum Management** â€” GMC number verification, approve/reject workflow
+- [x] **Client Management** â€” Hospital onboarding with CARAS accreditation tracking
+- [x] **Bank Holiday Awareness** â€” UK bank holidays tracked to avoid scheduling conflicts
+- [x] **Auto Seed Data** â€” Demo users, hospitals, doctors, bookings on first run
+- [x] **CI/CD** â€” GitHub Actions build & test pipeline
 
 ---
 
@@ -53,7 +53,7 @@ dotnet run --project TeamLocum.Web
 
 Open browser: **http://localhost:5115**
 
-> Database is auto-created and seeded on first run — no manual migrations needed!
+> Database is auto-created and seeded on first run â€” no manual migrations needed!
 
 ---
 
@@ -71,26 +71,26 @@ Open browser: **http://localhost:5115**
 
 ```
 TeamLocum/
-├── TeamLocum.sln
-└── TeamLocum.Web/
- ├── Controllers/
- │ ├── BookingsController.cs # [Authorize] — booking CRUD + job matching
- │ ├── ClientsController.cs # [Authorize] — hospital management
- │ ├── LocumsController.cs # [Authorize] — doctor approve/reject
- │ ├── HolidaysController.cs # [Authorize] — UK bank holiday management
- │ └── HomeController.cs # Public — landing page
- ├── Data/
- │ ├── ApplicationDbContext.cs # IdentityDbContext with all entities
- │ └── SeedData.cs # Demo: Admin + 3 hospitals + 5 doctors + bookings
- ├── Models/
- │ └── Entities.cs # ApplicationUser, Client, Locum, Booking, Holiday
- ├── Views/ # Razor views per controller
- └── Program.cs # App configuration with Identity + Roles
+â”œâ”€â”€ TeamLocum.sln
+â””â”€â”€ TeamLocum.Web/
+ â”œâ”€â”€ Controllers/
+ â”‚ â”œâ”€â”€ BookingsController.cs # [Authorize] â€” booking CRUD + job matching
+ â”‚ â”œâ”€â”€ ClientsController.cs # [Authorize] â€” hospital management
+ â”‚ â”œâ”€â”€ LocumsController.cs # [Authorize] â€” doctor approve/reject
+ â”‚ â”œâ”€â”€ HolidaysController.cs # [Authorize] â€” UK bank holiday management
+ â”‚ â””â”€â”€ HomeController.cs # Public â€” landing page
+ â”œâ”€â”€ Data/
+ â”‚ â”œâ”€â”€ ApplicationDbContext.cs # IdentityDbContext with all entities
+ â”‚ â””â”€â”€ SeedData.cs # Demo: Admin + 3 hospitals + 5 doctors + bookings
+ â”œâ”€â”€ Models/
+ â”‚ â””â”€â”€ Entities.cs # ApplicationUser, Client, Locum, Booking, Holiday
+ â”œâ”€â”€ Views/ # Razor views per controller
+ â””â”€â”€ Program.cs # App configuration with Identity + Roles
 ```
 
 ---
 
-## Core Algorithm — AI-Powered Heuristic Job Matching
+## Core Algorithm â€” AI-Powered Heuristic Job Matching
 
 The booking system automatically evaluates and scores available locums for any time slot by combining **time overlap detection** with a **token-efficient heuristic AI scoring system**:
 
@@ -149,14 +149,15 @@ return conflictFreeLocums.OrderByDescending(l => l.MatchScore).ToList();
 
 ## Background
 
-Built as MCA Capstone Project at **VNSGU, Surat**. The application models the real UK NHS locum staffing workflow — hospitals post shifts, doctors apply, administrators manage the matching process — all with proper role-based access control.
+Built as MCA Capstone Project at **VNSGU, Surat**. The application models the real UK NHS locum staffing workflow â€” hospitals post shifts, doctors apply, administrators manage the matching process â€” all with proper role-based access control.
 
 ---
 
 ## Author
 
-**Aditya Maisuriya** — AI Integration Engineer
+**Aditya Maisuriya** â€” AI Integration Engineer
 - Portfolio: [adityamaisuriya.pages.dev](https://adityamaisuriya.pages.dev)
 - LinkedIn: [linkedin.com/in/aditya-maisuriya-39a540202](https://linkedin.com/in/aditya-maisuriya-39a540202)
 - Email: adiiimaisuriya94@gmail.com
+
 
