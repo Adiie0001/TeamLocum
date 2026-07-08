@@ -1,4 +1,4 @@
-﻿# TeamLocum â€” Healthcare Staffing Management System
+# TeamLocum â€” Healthcare Staffing Management System
 
 [![.NET Build & Test](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Adiie0001/TeamLocum/actions/workflows/dotnet.yml)
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core_MVC-9.0-512BD4?style=flat-square&logo=.net&logoColor=white)
@@ -6,13 +6,12 @@
 ![SQL Server](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white)
 ![Identity](https://img.shields.io/badge/ASP.NET_Identity-RBAC-green?style=flat-square)
 
-A production-grade **Healthcare Staffing Web Application** built with **ASP.NET Core MVC 9** that connects locum doctors with hospitals and clinics. Developed as MCA Capstone Project â€” designed to solve real NHS locum staffing challenges.
+A production-grade **Healthcare Staffing Web Application** built with **ASP.NET Core MVC 9** that connects locum doctors with hospitals and clinics. Designed to solve real NHS locum staffing challenges.
 
 ---
 
 ## Features
 
-- [x] **ASP.NET Identity** â€” Role-based authentication (Admin / Client / Locum)
 - [x] **AI-Powered Job Matching** â€” Token-efficient heuristic matching and time-overlap detection
 - [x] **Booking Management** â€” Create, fill, and track healthcare staffing bookings
 - [x] **Locum Management** â€” GMC number verification, approve/reject workflow
@@ -149,7 +148,7 @@ return conflictFreeLocums.OrderByDescending(l => l.MatchScore).ToList();
 
 ## Background
 
-Built as MCA Capstone Project at **VNSGU, Surat**. The application models the real UK NHS locum staffing workflow â€” hospitals post shifts, doctors apply, administrators manage the matching process â€” all with proper role-based access control.
+Built with **ASP.NET Core MVC 9** at VNSGU, Surat. The application models the real UK NHS locum staffing workflow â€” hospitals post shifts, doctors apply, administrators manage the matching process â€” all with proper role-based access control.
 
 ---
 
