@@ -12,6 +12,14 @@ A production-grade **Healthcare Staffing Web Application** built with **ASP.NET 
 
 ---
 
+## 🚀 Project Evolution (2022 - Present)
+
+This repository stands as a testament to my 3.5+ years of continuous backend evolution and system scaling:
+- **2022 (The Foundation - MCA Project):** Built a highly complex, fully functional healthcare scheduling system from scratch. Implemented core NHS-compliant business rules, complex entity relationships, and role-based workflows that set a high standard for academic excellence.
+- **2024 (Enterprise Modernization):** Upgraded architecture to **.NET Core 8**, introduced robust Identity RBAC, and completely restructured the database using EF Core Code-First migrations for enhanced scalability.
+- **2025-2026 (The AI Shift):** Refactored to **.NET 9**. Engineered the **AI-Powered Job Matching Engine** to resolve time-overlap conflicts heuristically, added CI/CD GitHub Actions, and prepared the system for containerized deployment.
+
+---
 ## Features
 
 - [x] **AI-Powered Job Matching** - Token-efficient heuristic matching and time-overlap detection
