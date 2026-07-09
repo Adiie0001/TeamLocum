@@ -6,7 +6,7 @@
 ![SQL Server](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white)
 ![Identity](https://img.shields.io/badge/ASP.NET_Identity-RBAC-green?style=flat-square)
 
-A production-grade **Healthcare Staffing Web Application** built with **ASP.NET Core MVC 9** that connects locum doctors with hospitals and clinics. Designed to solve real NHS locum staffing challenges.
+A production-grade **Healthcare Staffing Web Application** built with **ASP.NET Core MVC 9 (.Net Core)** that connects locum doctors with hospitals and clinics. Implements OOP principles, Entity Framework Core (EF Core) with LINQ, RBAC design patterns, and MS SQL-compatible data modeling.
 
 ---
 
@@ -148,15 +148,13 @@ return conflictFreeLocums.OrderByDescending(l => l.MatchScore).ToList();
 
 ## Background
 
-Built with **ASP.NET Core MVC 9** at VNSGU, Surat. The application models the real UK NHS locum staffing workflow â€” hospitals post shifts, doctors apply, administrators manage the matching process â€” all with proper role-based access control.
+Built with **ASP.NET Core MVC 9** at VNSGU, Surat. The application models the real UK NHS locum staffing workflow — hospitals post shifts, doctors apply, administrators manage the matching process — all with proper role-based access control.
 
 ---
 
 ## Author
 
-**Aditya Maisuriya** â€” AI Integration Engineer
+**Aditya Maisuriya** - Full Stack Developer | ASP.NET Core | .NET | C# | AI Integration
 - Portfolio: [adityamaisuriya.pages.dev](https://adityamaisuriya.pages.dev)
 - LinkedIn: [linkedin.com/in/aditya-maisuriya-39a540202](https://linkedin.com/in/aditya-maisuriya-39a540202)
 - Email: adiiimaisuriya94@gmail.com
-
-
