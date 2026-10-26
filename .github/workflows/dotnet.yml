@@ -5,36 +5,75 @@ on:
     branches: [ main ]
     paths-ignore:
       - '**/*.md'
-      - '**/*.txt'
   pull_request:
     branches: [ main ]
     paths-ignore:
       - '**/*.md'
-      - '**/*.txt'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
+  web:
+    name: Build, tests and coverage gate
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-
+    timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Restore
+        run: dotnet restore
 
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
+      - name: Build (warnings are errors)
+        run: dotnet build --no-restore --configuration Release -warnaserror
 
-    - name: Test
-      run: dotnet test --no-build --configuration Release --verbosity normal
+      - name: Test with coverage gate (line 96, branch 88, method 96)
+        run: >
+          dotnet test TeamLocum.Tests/TeamLocum.Tests.csproj --no-build --configuration Release
+          -p:CollectCoverage=true -p:CoverletOutputFormat=cobertura -p:CoverletOutput=../coverage/
+          "-p:Include=[TeamLocum.Web]*" "-p:ExcludeByFile=**/Data/Migrations/**%2c**/DesignTimeDbContextFactory.cs%2c**/obj/**"
+          "-p:Threshold=96%2C88%2C96" "-p:ThresholdType=line%2Cbranch%2Cmethod" -p:ThresholdStat=total
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/coverage.cobertura.xml
+          if-no-files-found: ignore
+
+  docker:
+    name: Docker image builds and answers its health probe
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build --tag teamlocum:ci .
+
+      - name: Start the container and probe it
+        run: |
+          docker run --detach --name teamlocum --publish 8080:8080 \
+            --env Seed__AdminEmail=ci-admin@example.test \
+            --env Seed__AdminPassword='Ci-Passw0rd-Check' \
+            teamlocum:ci
+          ready=false
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error http://localhost:8080/health/ready; then ready=true; echo; break; fi
+            sleep 2
+          done
+          docker logs teamlocum
+          test "$ready" = true
+          curl --fail --silent --output /dev/null --write-out 'sign-in page: %{http_code}\n' http://localhost:8080/Identity/Account/Login
+          curl --fail --silent --output /dev/null --write-out 'stylesheet: %{http_code}\n' http://localhost:8080/css/site.css
+          docker rm --force teamlocum

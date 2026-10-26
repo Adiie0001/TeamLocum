@@ -1,45 +1,23 @@
+@model IReadOnlyList<DashboardItem>
 @{
-    ViewData["Title"] = "Admin Dashboard";
+    ViewData["Title"] = "Administration";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Admin Dashboard</h1>
-        <a asp-action="Users" class="btn btn-primary">Manage Users</a>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Administration</h1>
+    <a class="btn btn-outline-primary" asp-action="Users">Accounts</a>
+</div>
 
-    <div class="row g-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3">
+<div class="row row-cols-1 row-cols-md-4 g-3">
+    @foreach (var item in Model)
+    {
+        <div class="col">
+            <a class="card h-100 text-decoration-none" asp-controller="@item.Controller" asp-action="@item.Action">
                 <div class="card-body">
-                    <h5 class="card-title">Total Users</h5>
-                    <p class="card-text display-4">@ViewBag.TotalUsers</p>
+                    <div class="display-6">@item.Value</div>
+                    <div class="text-muted">@item.Label</div>
                 </div>
-            </div>
+            </a>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Total Bookings</h5>
-                    <p class="card-text display-4">@ViewBag.TotalBookings</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-warning mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Open Bookings</h5>
-                    <p class="card-text display-4">@ViewBag.OpenBookings</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-info mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Hospitals</h5>
-                    <p class="card-text display-4">@ViewBag.TotalHospitals</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    }
 </div>

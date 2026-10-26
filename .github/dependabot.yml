@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directories:
+      - /TeamLocum.Web
+      - /TeamLocum.Tests
+    schedule:
+      interval: weekly
+    groups:
+      microsoft:
+        patterns: [ "Microsoft.*", "System.*" ]
+      testing:
+        patterns: [ "xunit*", "coverlet*", "Microsoft.NET.Test.Sdk" ]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly

@@ -1,0 +1,71 @@
+@model BookingFormViewModel
+@{
+    ViewData["Title"] = Model.IsEdit ? "Edit shift" : "Post a shift";
+    var action = Model.IsEdit ? "Edit" : "Create";
+}
+
+<h1 class="h3 mb-3">@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-lg-7">
+        <form asp-action="@action" asp-route-id="@Model.Id" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <input type="hidden" asp-for="Input.ConcurrencyStamp" />
+
+            @if (Model.Clients.Count > 0)
+            {
+                <div class="mb-3">
+                    <label asp-for="Input.ClientId" class="form-label">Hospital</label>
+                    <select asp-for="Input.ClientId" asp-items="Model.Clients" class="form-select"><option value="">Choose…</option></select>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.StartsAt" class="form-label"></label>
+                    <input asp-for="Input.StartsAt" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" />
+                    <span asp-validation-for="Input.StartsAt" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.EndsAt" class="form-label"></label>
+                    <input asp-for="Input.EndsAt" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" />
+                    <span asp-validation-for="Input.EndsAt" class="text-danger"></span>
+                </div>
+            </div>
+            <p class="form-text">Times are local clinic time. A shift can run past midnight; it cannot be longer than 24 hours.</p>
+
+            <div class="mb-3">
+                <label asp-for="Input.Location" class="form-label"></label>
+                <input asp-for="Input.Location" class="form-control" placeholder="City General Hospital, Leicester" />
+                <span asp-validation-for="Input.Location" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.Specialty" class="form-label"></label>
+                    <input asp-for="Input.Specialty" class="form-control" placeholder="Paediatrics" />
+                    <span asp-validation-for="Input.Specialty" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.RatePerHour" class="form-label"></label>
+                    <input asp-for="Input.RatePerHour" class="form-control" type="number" step="0.01" min="1" />
+                    <span asp-validation-for="Input.RatePerHour" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Notes" class="form-label"></label>
+                <textarea asp-for="Input.Notes" class="form-control" rows="3"></textarea>
+                <div class="form-text">Visible to doctors. Do not include patient or staff names.</div>
+                <span asp-validation-for="Input.Notes" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">@(Model.IsEdit ? "Save changes" : "Post shift")</button>
+            <a class="btn btn-outline-secondary ms-2" asp-action="@(Model.IsEdit ? "Details" : "Index")" asp-route-id="@Model.Id">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,32 +1,63 @@
-@model IEnumerable<TeamLocum.Web.Models.Client>
-
+@model ClientIndexViewModel
 @{
-    ViewData["Title"] = "Manage Clients";
+    ViewData["Title"] = "Hospitals";
 }
 
-<h1>Manage Clients</h1>
+<h1 class="h3 mb-3">Hospitals and clinics</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>@item.CompanyName</td>
-            <td>@item.User.Email</td>
-            <td>@item.Status</td>
-            <td>
-                <a asp-action="Approve" asp-route-id="@item.Id" class="btn btn-success btn-sm">Accept</a>
-                <a asp-action="Reject" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Reject</a>
-                <a asp-action="Masquerade" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Masquerade</a>
-            </td>
-        </tr>
+<form method="get" class="row g-2 align-items-end mb-3">
+    <div class="col-auto">
+        <label class="form-label" for="status">Status</label>
+        <select class="form-select" id="status" name="status">
+            <option value="">Any</option>
+            @foreach (var status in Enum.GetValues<ClientStatus>())
+            {
+                <option value="@status" selected="@(Model.Status == status)">@UiHelpers.Label(status)</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto"><button type="submit" class="btn btn-outline-primary">Filter</button></div>
+</form>
+
+@if (Model.Rows.Count == 0)
+{
+    <p class="text-muted">No hospitals match.</p>
 }
-    </tbody>
-</table>
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Hospital</th><th>Contact</th><th>Accreditation ref.</th><th>Registered</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td>@row.CompanyName</td>
+                        <td>@row.Contact<div class="small text-muted">@row.Email</div></td>
+                        <td>@(row.CarasId ?? "–")</td>
+                        <td>@UiHelpers.Day(row.CreatedAt)</td>
+                        <td><span class="badge @UiHelpers.Badge(row.Status)">@UiHelpers.Label(row.Status)</span></td>
+                        <td class="text-end text-nowrap">
+                            @if (row.Status is ClientStatus.AwaitingReview or ClientStatus.Rejected)
+                            {
+                                <form asp-action="Approve" asp-route-id="@row.Id" method="post" class="d-inline"><button class="btn btn-sm btn-success" type="submit">Approve</button></form>
+                            }
+                            @if (row.Status == ClientStatus.AwaitingReview)
+                            {
+                                <form asp-action="Reject" asp-route-id="@row.Id" method="post" class="d-inline"><button class="btn btn-sm btn-outline-danger" type="submit">Reject</button></form>
+                            }
+                            @if (row.Status == ClientStatus.Accepted)
+                            {
+                                <form asp-action="Suspend" asp-route-id="@row.Id" method="post" class="d-inline"><button class="btn btn-sm btn-outline-warning" type="submit">Suspend</button></form>
+                            }
+                            @if (row.Status == ClientStatus.Suspended)
+                            {
+                                <form asp-action="Reinstate" asp-route-id="@row.Id" method="post" class="d-inline"><button class="btn btn-sm btn-outline-success" type="submit">Reinstate</button></form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

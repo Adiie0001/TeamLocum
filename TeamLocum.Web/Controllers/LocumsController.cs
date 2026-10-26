@@ -1,159 +1,74 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using TeamLocum.Web.Data;
-using TeamLocum.Web.Models;
+using TeamLocum.Web.Domain;
+using TeamLocum.Web.Services;
+using TeamLocum.Web.ViewModels;
 
-namespace TeamLocum.Web.Controllers
+namespace TeamLocum.Web.Controllers;
+
+[Authorize]
+public class LocumsController(DirectoryService directory, IActorAccessor actors) : Controller
 {
-    [Authorize]
-    public class LocumsController : Controller
+    [HttpGet]
+    [Authorize(Roles = Roles.Admin + "," + Roles.Client)]
+    public async Task<IActionResult> Index(string? search, LocumStatus? status, CancellationToken ct)
     {
-        private readonly ApplicationDbContext _context;
+        var actor = await actors.RequireAsync(ct);
+        var rows = await directory.ListLocumsAsync(actor, search, status, ct);
+        return View(new LocumIndexViewModel(actor, rows, search, status));
+    }
 
-        public LocumsController(ApplicationDbContext context)
+    [HttpGet]
+    public async Task<IActionResult> Details(int id, CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        return View(new LocumDetailsViewModel(actor, await directory.GetLocumAsync(actor, id, ct)));
+    }
+
+    [HttpGet]
+    [Authorize(Roles = Roles.Locum)]
+    public async Task<IActionResult> Profile(CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        return View(new LocumProfileViewModel(actor, await directory.GetMyLocumProfileAsync(actor, ct)));
+    }
+
+    [HttpPost]
+    [Authorize(Roles = Roles.Locum)]
+    public async Task<IActionResult> Profile([Bind(Prefix = "Input")] LocumProfileInput input, CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        if (!ModelState.IsValid)
         {
-            _context = context;
+            return View(new LocumProfileViewModel(actor, input));
         }
 
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Locums.Include(l => l.User).ToListAsync());
-        }
+        await directory.UpdateMyLocumProfileAsync(actor, input, ct);
+        TempData["Success"] = "Profile saved.";
+        return RedirectToAction(nameof(Profile));
+    }
 
-        public async Task<IActionResult> Approve(int id)
-        {
-             var locum = await _context.Locums.FindAsync(id);
-             if (locum != null) {
-                 locum.Status = "Accepted";
-                 await _context.SaveChangesAsync();
-             }
-             return RedirectToAction(nameof(Index));
-        }
+    [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
+    public Task<IActionResult> Approve(int id, CancellationToken ct) => Change(id, LocumStatus.Active, "Doctor approved.", ct);
 
-        public async Task<IActionResult> Reject(int id)
-        {
-             var locum = await _context.Locums.FindAsync(id);
-             if (locum != null) {
-                 locum.Status = "Rejected";
-                 await _context.SaveChangesAsync();
-             }
-             return RedirectToAction(nameof(Index));
-        }
-    
-public IActionResult Create()
-        {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-            return View();
-        }
+    [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
+    public Task<IActionResult> Reject(int id, CancellationToken ct) => Change(id, LocumStatus.Rejected, "Doctor rejected.", ct);
 
-        // POST: Locums/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,CarasId,Status,ResumePath,GmcNumber")] Locum locum)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(locum);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", locum.UserId);
-            return View(locum);
-        }
+    [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
+    public Task<IActionResult> Suspend(int id, CancellationToken ct) => Change(id, LocumStatus.Suspended, "Doctor suspended.", ct);
 
-        // GET: Locums/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+    [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
+    public Task<IActionResult> Reinstate(int id, CancellationToken ct) => Change(id, LocumStatus.Active, "Doctor reinstated.", ct);
 
-            var locum = await _context.Locums.FindAsync(id);
-            if (locum == null)
-            {
-                return NotFound();
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", locum.UserId);
-            return View(locum);
-        }
-
-        // POST: Locums/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,CarasId,Status,ResumePath,GmcNumber")] Locum locum)
-        {
-            if (id != locum.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(locum);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!LocumExists(locum.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", locum.UserId);
-            return View(locum);
-        }
-
-        // GET: Locums/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var locum = await _context.Locums
-                .Include(l => l.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (locum == null)
-            {
-                return NotFound();
-            }
-
-            return View(locum);
-        }
-
-        // POST: Locums/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var locum = await _context.Locums.FindAsync(id);
-            if (locum != null)
-            {
-                _context.Locums.Remove(locum);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool LocumExists(int id)
-        {
-            return _context.Locums.Any(e => e.Id == id);
-        }
-    
+    private async Task<IActionResult> Change(int id, LocumStatus next, string success, CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        await directory.ChangeLocumStatusAsync(actor, id, next, ct);
+        TempData["Success"] = success;
+        return RedirectToAction(nameof(Index));
     }
 }
-
-

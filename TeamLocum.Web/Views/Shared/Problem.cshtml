@@ -1,0 +1,10 @@
+@model string
+@{
+    ViewData["Title"] = "Request not completed";
+}
+
+<div class="alert alert-danger" role="alert">
+    <h1 class="h5">That could not be done</h1>
+    <p class="mb-0">@Model</p>
+</div>
+<p><a href="/" class="btn btn-outline-secondary" data-history-back>Go back</a></p>

@@ -1,31 +1,89 @@
-@model IEnumerable<TeamLocum.Web.Models.Locum>
-
+@model LocumIndexViewModel
 @{
-    ViewData["Title"] = "Manage Locums";
+    var actor = Model.Actor;
+    ViewData["Title"] = "Doctors";
 }
 
-<h1>Manage Locums</h1>
+<h1 class="h3 mb-3">Doctors</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>@item.User.FirstName @item.User.LastName</td>
-            <td>@item.User.Email</td>
-            <td>@item.Status</td>
-            <td>
-                <a asp-action="Approve" asp-route-id="@item.Id" class="btn btn-success btn-sm">Accept</a>
-                <a asp-action="Reject" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Reject</a>
-            </td>
-        </tr>
+<form method="get" class="row g-2 align-items-end mb-3">
+    <div class="col-auto">
+        <label class="form-label" for="search">Specialty, location or surname</label>
+        <input class="form-control" id="search" name="search" value="@Model.Search" maxlength="60" />
+    </div>
+    @if (actor.IsAdmin)
+    {
+        <div class="col-auto">
+            <label class="form-label" for="status">Status</label>
+            <select class="form-select" id="status" name="status">
+                <option value="">Any</option>
+                @foreach (var status in Enum.GetValues<LocumStatus>())
+                {
+                    <option value="@status" selected="@(Model.Status == status)">@UiHelpers.Label(status)</option>
+                }
+            </select>
+        </div>
+    }
+    <div class="col-auto"><button type="submit" class="btn btn-outline-primary">Filter</button></div>
+</form>
+
+@if (Model.Rows.Count == 0)
+{
+    <p class="text-muted">No doctors match.</p>
 }
-    </tbody>
-</table>
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Specialties</th>
+                    <th>Based in</th>
+                    <th class="text-end">Minimum rate</th>
+                    <th class="text-end">Experience</th>
+                    <th>GMC</th>
+                    @if (actor.IsAdmin) { <th>Status</th><th></th> }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@row.Id">@row.Name</a>
+                            @if (actor.IsAdmin) { <div class="small text-muted">@row.Email</div> }
+                        </td>
+                        <td>@string.Join(", ", row.Specialties)</td>
+                        <td>@row.BaseLocation</td>
+                        <td class="text-end">@UiHelpers.Money(row.MinRatePerHour)/h</td>
+                        <td class="text-end">@row.YearsExperience yrs</td>
+                        <td>@row.GmcNumber</td>
+                        @if (actor.IsAdmin)
+                        {
+                            <td><span class="badge @UiHelpers.Badge(row.Status)">@UiHelpers.Label(row.Status)</span></td>
+                            <td class="text-end text-nowrap">
+                                @if (row.Status is LocumStatus.PendingReview or LocumStatus.Rejected)
+                                {
+                                    <form asp-action="Approve" asp-route-id="@row.Id" method="post" class="d-inline"><button class="btn btn-sm btn-success" type="submit">Approve</button></form>
+                                }
+                                @if (row.Status == LocumStatus.PendingReview)
+                                {
+                                    <form asp-action="Reject" asp-route-id="@row.Id" method="post" class="d-inline"><button class="btn btn-sm btn-outline-danger" type="submit">Reject</button></form>
+                                }
+                                @if (row.Status == LocumStatus.Active)
+                                {
+                                    <form asp-action="Suspend" asp-route-id="@row.Id" method="post" class="d-inline"><button class="btn btn-sm btn-outline-warning" type="submit">Suspend</button></form>
+                                }
+                                @if (row.Status == LocumStatus.Suspended)
+                                {
+                                    <form asp-action="Reinstate" asp-route-id="@row.Id" method="post" class="d-inline"><button class="btn btn-sm btn-outline-success" type="submit">Reinstate</button></form>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

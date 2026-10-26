@@ -1,187 +1,66 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using TeamLocum.Web.Data;
-using TeamLocum.Web.Models;
+using TeamLocum.Web.Domain;
+using TeamLocum.Web.Services;
+using TeamLocum.Web.ViewModels;
 
-namespace TeamLocum.Web.Controllers
+namespace TeamLocum.Web.Controllers;
+
+[Authorize]
+public class ClientsController(DirectoryService directory, IActorAccessor actors) : Controller
 {
-    [Authorize]
-    public class ClientsController : Controller
+    [HttpGet]
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> Index(ClientStatus? status, CancellationToken ct)
     {
-        private readonly ApplicationDbContext _context;
+        var actor = await actors.RequireAsync(ct);
+        return View(new ClientIndexViewModel(await directory.ListClientsAsync(actor, status, ct), status));
+    }
 
-        public ClientsController(ApplicationDbContext context)
+    [HttpGet]
+    [Authorize(Roles = Roles.Client)]
+    public async Task<IActionResult> Profile(CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        return View(new ClientProfileViewModel(actor, await directory.GetMyClientProfileAsync(actor, ct)));
+    }
+
+    [HttpPost]
+    [Authorize(Roles = Roles.Client)]
+    public async Task<IActionResult> Profile([Bind(Prefix = "Input")] ClientProfileInput input, CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        if (!ModelState.IsValid)
         {
-            _context = context;
+            return View(new ClientProfileViewModel(actor, input));
         }
 
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Clients.Include(c => c.User).ToListAsync());
-        }
+        await directory.UpdateMyClientProfileAsync(actor, input, ct);
+        TempData["Success"] = "Profile saved.";
+        return RedirectToAction(nameof(Profile));
+    }
 
-        // GET: Clients/Masquerade/5
-        public IActionResult Masquerade(int? id)
-        {
-            if (id == null) return NotFound();
-            // In a real app, strict security checks here!
-            // For showcase, we just "pretend" by redirecting to a client dashboard with their context
-            return RedirectToAction("Index", "Dashboard", new { area = "Client", clientId = id });
-        }
+    [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
+    public Task<IActionResult> Approve(int id, CancellationToken ct) => Change(id, ClientStatus.Accepted, "Hospital approved.", ct);
 
-        public async Task<IActionResult> Approve(int id)
-        {
-             var client = await _context.Clients.FindAsync(id);
-             if (client != null) {
-                 client.Status = "Accepted";
-                 await _context.SaveChangesAsync();
-             }
-             return RedirectToAction(nameof(Index));
-        }
+    [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
+    public Task<IActionResult> Reject(int id, CancellationToken ct) => Change(id, ClientStatus.Rejected, "Hospital rejected.", ct);
 
-        public async Task<IActionResult> Reject(int id)
-        {
-             var client = await _context.Clients.FindAsync(id);
-             if (client != null) {
-                 client.Status = "Rejected";
-                 await _context.SaveChangesAsync();
-             }
-             return RedirectToAction(nameof(Index));
-        }
-    
-public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+    [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
+    public Task<IActionResult> Suspend(int id, CancellationToken ct) => Change(id, ClientStatus.Suspended, "Hospital suspended.", ct);
 
-            var client = await _context.Clients
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (client == null)
-            {
-                return NotFound();
-            }
+    [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
+    public Task<IActionResult> Reinstate(int id, CancellationToken ct) => Change(id, ClientStatus.Accepted, "Hospital reinstated.", ct);
 
-            return View(client);
-        }
-
-        // GET: DummyClients/Create
-        public IActionResult Create()
-        {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-            return View();
-        }
-
-        // POST: Clients/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,CompanyName,CarasId,Status,IsAccredited")] Client client)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(client);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", client.UserId);
-            return View(client);
-        }
-
-        // GET: Clients/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var client = await _context.Clients.FindAsync(id);
-            if (client == null)
-            {
-                return NotFound();
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", client.UserId);
-            return View(client);
-        }
-
-        // POST: Clients/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,CompanyName,CarasId,Status,IsAccredited")] Client client)
-        {
-            if (id != client.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(client);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ClientExists(client.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", client.UserId);
-            return View(client);
-        }
-
-        // GET: Clients/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var client = await _context.Clients
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (client == null)
-            {
-                return NotFound();
-            }
-
-            return View(client);
-        }
-
-        // POST: Clients/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var client = await _context.Clients.FindAsync(id);
-            if (client != null)
-            {
-                _context.Clients.Remove(client);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ClientExists(int id)
-        {
-            return _context.Clients.Any(e => e.Id == id);
-        }
-    
+    private async Task<IActionResult> Change(int id, ClientStatus next, string success, CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        await directory.ChangeClientStatusAsync(actor, id, next, ct);
+        TempData["Success"] = success;
+        return RedirectToAction(nameof(Index));
     }
 }
-
-

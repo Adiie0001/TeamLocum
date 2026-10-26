@@ -1,0 +1,55 @@
+@model LocumProfileViewModel
+@{
+    ViewData["Title"] = "My profile";
+}
+
+<h1 class="h3 mb-3">My doctor profile</h1>
+<p class="text-muted">Hospitals rank doctors by these details, so keep them current. Your GMC number can only be changed by an administrator.</p>
+
+<div class="row">
+    <div class="col-lg-6">
+        <form asp-action="Profile" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.FirstName" class="form-label"></label>
+                    <input asp-for="Input.FirstName" class="form-control" />
+                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.LastName" class="form-label"></label>
+                    <input asp-for="Input.LastName" class="form-control" />
+                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Input.Specialties" class="form-label"></label>
+                <input asp-for="Input.Specialties" class="form-control" />
+                <span asp-validation-for="Input.Specialties" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Input.BaseLocation" class="form-label"></label>
+                <input asp-for="Input.BaseLocation" class="form-control" />
+                <span asp-validation-for="Input.BaseLocation" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.MinRatePerHour" class="form-label"></label>
+                    <input asp-for="Input.MinRatePerHour" class="form-control" type="number" step="0.01" min="0" />
+                    <span asp-validation-for="Input.MinRatePerHour" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.YearsExperience" class="form-label"></label>
+                    <input asp-for="Input.YearsExperience" class="form-control" type="number" min="0" max="60" />
+                    <span asp-validation-for="Input.YearsExperience" class="text-danger"></span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save profile</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

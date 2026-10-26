@@ -1,0 +1,44 @@
+@model ClientProfileViewModel
+@{
+    ViewData["Title"] = "My hospital";
+    var status = Model.Actor.ClientStatus ?? ClientStatus.AwaitingReview;
+}
+
+<h1 class="h3 mb-1">My hospital</h1>
+<p><span class="badge @UiHelpers.Badge(status)">@UiHelpers.Label(status)</span></p>
+
+<div class="row">
+    <div class="col-lg-6">
+        <form asp-action="Profile" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Input.CompanyName" class="form-label"></label>
+                <input asp-for="Input.CompanyName" class="form-control" />
+                <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Input.CarasId" class="form-label"></label>
+                <input asp-for="Input.CarasId" class="form-control" />
+                <span asp-validation-for="Input.CarasId" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.FirstName" class="form-label"></label>
+                    <input asp-for="Input.FirstName" class="form-control" />
+                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.LastName" class="form-label"></label>
+                    <input asp-for="Input.LastName" class="form-control" />
+                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

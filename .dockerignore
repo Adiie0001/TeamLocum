@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+.git/
+.github/
+.vscode/
+TeamLocum.Tests/
+coverage/
+*.db
+*.db-shm
+*.db-wal
+.env

@@ -1,31 +1,30 @@
-@model TeamLocum.Web.Models.Holiday
-
+@model HolidayInput
 @{
-    ViewData["Title"] = "Add Holiday";
+    ViewData["Title"] = "Add a bank holiday";
 }
 
-<h1>Add Holiday</h1>
+<h1 class="h3 mb-3">Add a bank holiday</h1>
 
-<h4>Holiday</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
+    <div class="col-lg-5">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <div class="mb-3">
+                <label asp-for="Date" class="form-label"></label>
                 <input asp-for="Date" type="date" class="form-control" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Details" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="Details" class="form-label">Name</label>
                 <input asp-for="Details" class="form-control" />
                 <span asp-validation-for="Details" class="text-danger"></span>
             </div>
-            <div class="form-group mt-3">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+            <a class="btn btn-outline-secondary ms-2" asp-action="Index">Cancel</a>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

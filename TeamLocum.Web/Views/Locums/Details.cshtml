@@ -1,48 +1,45 @@
-@model TeamLocum.Web.Models.Locum
-
+@model LocumDetailsViewModel
 @{
-    ViewData["Title"] = "Details";
+    var locum = Model.Locum;
+    ViewData["Title"] = locum.Name;
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>Locum</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CarasId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CarasId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ResumePath)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ResumePath)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.GmcNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.GmcNumber)
-        </dd>
-    </dl>
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h1 class="h3 mb-1">@locum.Name</h1>
+        <span class="badge @UiHelpers.Badge(locum.Status)">@UiHelpers.Label(locum.Status)</span>
+    </div>
+    @if (Model.Actor.IsLocum)
+    {
+        <a class="btn btn-outline-primary" asp-action="Profile">Edit my profile</a>
+    }
+    else
+    {
+        <a class="btn btn-outline-secondary" asp-action="Index">Back to doctors</a>
+    }
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Specialties</dt>
+            <dd class="col-sm-9">@(locum.Specialties.Count == 0 ? "None listed" : string.Join(", ", locum.Specialties))</dd>
+            <dt class="col-sm-3">Based in</dt>
+            <dd class="col-sm-9">@locum.BaseLocation</dd>
+            <dt class="col-sm-3">Minimum rate</dt>
+            <dd class="col-sm-9">@UiHelpers.Money(locum.MinRatePerHour) per hour</dd>
+            <dt class="col-sm-3">Experience</dt>
+            <dd class="col-sm-9">@locum.YearsExperience years</dd>
+            @if (locum.GmcNumber is not null)
+            {
+                <dt class="col-sm-3">GMC number</dt>
+                <dd class="col-sm-9">@locum.GmcNumber <span class="text-muted">· check it on the public GMC register before the shift</span></dd>
+            }
+            @if (locum.Email is not null)
+            {
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@locum.Email</dd>
+            }
+        </dl>
+    </div>
 </div>

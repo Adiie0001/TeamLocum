@@ -1,72 +1,218 @@
-@model TeamLocum.Web.Models.Booking
-
+@model BookingDetailsViewModel
 @{
-    ViewData["Title"] = "Details";
+    var actor = Model.Actor;
+    var details = Model.Details;
+    var booking = details.Booking;
+    var permissions = details.Permissions;
+    var isOwner = actor.IsAdmin || (actor.IsClient && actor.ClientId == booking.ClientId);
+    ViewData["Title"] = "Shift";
 }
 
-<h1>Details</h1>
+<div class="d-flex flex-wrap justify-content-between align-items-start mb-3">
+    <div>
+        <h1 class="h3 mb-1">@(booking.Specialty ?? "Shift") at @booking.Location</h1>
+        <span class="badge @UiHelpers.Badge(booking.Status)">@booking.Status</span>
+        @if (details.MyApplication is { } mine)
+        {
+            <span class="badge @UiHelpers.Badge(mine) ms-1">Your application: @mine.ToString().ToLowerInvariant()</span>
+        }
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back to list</a>
+</div>
 
-<div>
-    <h4>Booking</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Client)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Client.CompanyName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Locum)
-        </dt>
-        <dd class = "col-sm-10">
-            @(Model?.Locum != null ? $"Dr. {Model.Locum.User?.FirstName} {Model.Locum.User?.LastName} (GMC: {Model.Locum.GmcNumber})" : "Unassigned")
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RatePerHour)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RatePerHour)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Location)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Location)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Notes)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Notes)
-        </dd>
-    </dl>
+@foreach (var warning in details.Warnings)
+{
+    <div class="alert alert-info" role="status">@warning</div>
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">When</dt>
+                    <dd class="col-sm-8">@UiHelpers.Window(booking.StartsAt, booking.EndsAt) <span class="text-muted">(@UiHelpers.Hours(booking.Duration))</span></dd>
+                    <dt class="col-sm-4">Hospital</dt>
+                    <dd class="col-sm-8">@booking.Client?.CompanyName</dd>
+                    <dt class="col-sm-4">Rate</dt>
+                    <dd class="col-sm-8">@UiHelpers.Money(booking.RatePerHour) per hour · @UiHelpers.Money(booking.TotalPay) in total</dd>
+                    <dt class="col-sm-4">Specialty</dt>
+                    <dd class="col-sm-8">@(booking.Specialty ?? "Any")</dd>
+                    <dt class="col-sm-4">Doctor</dt>
+                    <dd class="col-sm-8">
+                        @if (booking.Locum?.User is { } doctor)
+                        {
+                            if (isOwner)
+                            {
+                                <a asp-controller="Locums" asp-action="Details" asp-route-id="@booking.Locum.Id">@doctor.FullName</a>
+                                <span class="text-muted">· GMC @booking.Locum.GmcNumber</span>
+                            }
+                            else
+                            {
+                                <text>@(actor.LocumId == booking.LocumId ? "You" : "Assigned")</text>
+                            }
+                        }
+                        else
+                        {
+                            <text>Not assigned yet</text>
+                        }
+                    </dd>
+                    @if (!string.IsNullOrWhiteSpace(booking.Notes))
+                    {
+                        <dt class="col-sm-4">Notes</dt>
+                        <dd class="col-sm-8">@booking.Notes</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div class="card-body d-flex flex-column gap-2">
+                <h2 class="h6 text-uppercase text-muted">Actions</h2>
+
+                @if (permissions.CanApply)
+                {
+                    <form asp-action="Apply" asp-route-id="@booking.Id" method="post">
+                        <label class="form-label" for="apply-message">Message to the hospital (optional)</label>
+                        <textarea class="form-control mb-2" id="apply-message" name="message" rows="2" maxlength="500"></textarea>
+                        <button type="submit" class="btn btn-primary">Apply for this shift</button>
+                    </form>
+                }
+                @if (permissions.CanWithdraw)
+                {
+                    <form asp-action="Withdraw" asp-route-id="@booking.Id" method="post">
+                        <button type="submit" class="btn btn-outline-secondary">Withdraw my application</button>
+                    </form>
+                }
+                @if (permissions.CanEdit)
+                {
+                    <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@booking.Id">Edit shift</a>
+                }
+                @if (permissions.CanRelease)
+                {
+                    <form asp-action="Release" asp-route-id="@booking.Id" method="post">
+                        <button type="submit" class="btn btn-outline-warning">Release the doctor</button>
+                    </form>
+                }
+                @if (permissions.CanComplete)
+                {
+                    <form asp-action="Complete" asp-route-id="@booking.Id" method="post">
+                        <button type="submit" class="btn btn-success">Mark as completed</button>
+                    </form>
+                }
+                @if (permissions.CanCancel)
+                {
+                    <form asp-action="Cancel" asp-route-id="@booking.Id" method="post">
+                        <button type="submit" class="btn btn-outline-danger">Cancel shift</button>
+                    </form>
+                }
+                @if (!permissions.CanApply && !permissions.CanWithdraw && !permissions.CanEdit && !permissions.CanRelease && !permissions.CanComplete && !permissions.CanCancel)
+                {
+                    <p class="text-muted mb-0">No actions are available for this shift.</p>
+                }
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@if (isOwner && details.Applicants.Count > 0)
+{
+    <h2 class="h5">Applicants</h2>
+    <div class="table-responsive mb-4">
+        <table class="table align-middle">
+            <thead><tr><th>Doctor</th><th>Status</th><th>Message</th><th>Applied</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var applicant in details.Applicants)
+                {
+                    <tr>
+                        <td><a asp-controller="Locums" asp-action="Details" asp-route-id="@applicant.LocumId">@applicant.Name</a></td>
+                        <td><span class="badge @UiHelpers.Badge(applicant.Status)">@applicant.Status</span></td>
+                        <td>@applicant.Message</td>
+                        <td>@UiHelpers.Moment(applicant.AppliedAt)</td>
+                        <td class="text-end">
+                            @if (permissions.CanAssign && applicant.Status == ApplicationStatus.Pending)
+                            {
+                                <form asp-action="Assign" asp-route-id="@booking.Id" method="post" class="d-inline">
+                                    <input type="hidden" name="locumId" value="@applicant.LocumId" />
+                                    <input type="hidden" name="stamp" value="@booking.ConcurrencyStamp" />
+                                    <button type="submit" class="btn btn-sm btn-primary">Assign</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (Model.Matches is { } matches)
+{
+    <h2 class="h5">Suggested doctors</h2>
+    <p class="text-muted">
+        @switch (matches.Source)
+        {
+            case MatchSources.Gemini:
+                <text>Ranked by an AI model from anonymised profiles (specialty, location, rate, experience).</text>
+                break;
+            case MatchSources.RulesFallback:
+                <text>The AI ranking was unavailable, so doctors are ranked by the transparent rules below.</text>
+                break;
+            default:
+                <text>Ranked by transparent rules: specialty 40, location 25, rate 15, experience 10, interest 10. Only doctors who are free at these times are listed.</text>
+                break;
+        }
+    </p>
+
+    @if (matches.Candidates.Count == 0)
+    {
+        <p class="text-muted">No approved doctor is free for this shift.</p>
+    }
+    else
+    {
+        <div class="table-responsive mb-4">
+            <table class="table align-middle">
+                <thead><tr><th>#</th><th>Doctor</th><th class="text-end">Score</th><th>Why</th><th></th></tr></thead>
+                <tbody>
+                    @{ var rank = 0; }
+                    @foreach (var candidate in matches.Candidates)
+                    {
+                        rank++;
+                        <tr>
+                            <td>@rank</td>
+                            <td>
+                                <a asp-controller="Locums" asp-action="Details" asp-route-id="@candidate.LocumId">@candidate.DisplayName</a>
+                                @if (candidate.Applied) { <span class="badge text-bg-warning ms-1">Applied</span> }
+                            </td>
+                            <td class="text-end fw-semibold">@candidate.Score</td>
+                            <td>
+                                @candidate.Summary
+                                @if (candidate.Factors.Count > 0)
+                                {
+                                    <details class="small text-muted">
+                                        <summary>Score breakdown</summary>
+                                        <ul class="mb-0">
+                                            @foreach (var factor in candidate.Factors)
+                                            {
+                                                <li>@factor.Name: @factor.Points / @factor.MaxPoints, @factor.Detail</li>
+                                            }
+                                        </ul>
+                                    </details>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <form asp-action="Assign" asp-route-id="@booking.Id" method="post">
+                                    <input type="hidden" name="locumId" value="@candidate.LocumId" />
+                                    <input type="hidden" name="stamp" value="@booking.ConcurrencyStamp" />
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Assign</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}

@@ -1,33 +1,118 @@
-@model IEnumerable<TeamLocum.Web.Models.Booking>
-
+@model BookingIndexViewModel
 @{
-    ViewData["Title"] = "Bookings";
+    var actor = Model.Actor;
+    var query = Model.Query;
+    var result = Model.Result;
+    ViewData["Title"] = actor.IsLocum ? "Shifts" : "Bookings";
 }
 
-<h1>Bookings</h1>
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">@ViewData["Title"]</h1>
+    @if (actor.CanPostShifts)
+    {
+        <a class="btn btn-primary" asp-action="Create">Post a shift</a>
+    }
+</div>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Location</th>
-            <th>Client</th>
-            <th>Locum</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>@item.Date.ToShortDateString() @item.StartTime - @item.EndTime</td>
-            <td>@item.Location</td>
-            <td>@item.Client.CompanyName</td>
-            <td>@(item.Locum != null ? item.Locum.User.FirstName : "Unassigned")</td>
-            <td>@item.Status</td>
-        </tr>
+<form method="get" class="row g-2 align-items-end mb-3">
+    @if (actor.IsLocum)
+    {
+        <div class="col-auto">
+            <label class="form-label" for="scope">Show</label>
+            <select class="form-select" id="scope" name="scope">
+                <option value="Default" selected="@(query.Scope == BookingScope.Default)">Everything I can see</option>
+                <option value="Open" selected="@(query.Scope == BookingScope.Open)">Open shifts</option>
+                <option value="Mine" selected="@(query.Scope == BookingScope.Mine)">My shifts</option>
+            </select>
+        </div>
+    }
+    <div class="col-auto">
+        <label class="form-label" for="status">Status</label>
+        <select class="form-select" id="status" name="status">
+            <option value="">Any</option>
+            @foreach (var status in Enum.GetValues<BookingStatus>())
+            {
+                <option value="@status" selected="@(query.Status == status)">@status</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <label class="form-label" for="search">Location or specialty</label>
+        <input class="form-control" id="search" name="search" value="@query.Search" maxlength="60" />
+    </div>
+    <div class="col-auto form-check mb-2 ms-2">
+        <input class="form-check-input" type="checkbox" id="past" name="past" value="true" checked="@query.Past" />
+        <label class="form-check-label" for="past">Past shifts</label>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">Filter</button>
+    </div>
+</form>
+
+@if (result.Items.Count == 0)
+{
+    <p class="text-muted">No shifts match.</p>
 }
-    </tbody>
-</table>
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>When</th>
+                    <th>Where</th>
+                    <th>Specialty</th>
+                    @if (!actor.IsClient) { <th>Hospital</th> }
+                    <th>Doctor</th>
+                    <th class="text-end">Rate</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in result.Items)
+                {
+                    <tr>
+                        <td>
+                            @UiHelpers.Window(row.StartsAt, row.EndsAt)
+                            @if (row.Holiday is not null) { <span class="badge text-bg-info ms-1">@row.Holiday</span> }
+                        </td>
+                        <td>@row.Location</td>
+                        <td>@(row.Specialty ?? "Any")</td>
+                        @if (!actor.IsClient) { <td>@row.ClientName</td> }
+                        <td>@(row.LocumName ?? "Unassigned")</td>
+                        <td class="text-end">@UiHelpers.Money(row.RatePerHour)/h</td>
+                        <td>
+                            <span class="badge @UiHelpers.Badge(row.Status)">@row.Status</span>
+                            @if (row.PendingApplications > 0)
+                            {
+                                <span class="badge text-bg-warning ms-1">@row.PendingApplications applicant@(row.PendingApplications == 1 ? "" : "s")</span>
+                            }
+                            @if (row.MyApplication is { } mine)
+                            {
+                                <span class="badge @UiHelpers.Badge(mine) ms-1">Application @mine.ToString().ToLowerInvariant()</span>
+                            }
+                        </td>
+                        <td class="text-end"><a asp-action="Details" asp-route-id="@row.Id">Open</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <nav class="d-flex justify-content-between align-items-center" aria-label="Pages">
+        <span class="text-muted">@result.TotalCount shift@(result.TotalCount == 1 ? "" : "s"), page @result.Page of @Math.Max(1, result.TotalPages)</span>
+        <div>
+            @if (result.Page > 1)
+            {
+                <a class="btn btn-sm btn-outline-secondary" asp-action="Index" asp-route-page="@(result.Page - 1)"
+                   asp-route-scope="@query.Scope" asp-route-status="@query.Status" asp-route-search="@query.Search" asp-route-past="@query.Past" asp-route-pageSize="@query.PageSize">Previous</a>
+            }
+            @if (result.Page < result.TotalPages)
+            {
+                <a class="btn btn-sm btn-outline-secondary" asp-action="Index" asp-route-page="@(result.Page + 1)"
+                   asp-route-scope="@query.Scope" asp-route-status="@query.Status" asp-route-search="@query.Search" asp-route-past="@query.Past" asp-route-pageSize="@query.PageSize">Next</a>
+            }
+        </div>
+    </nav>
+}

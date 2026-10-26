@@ -1,27 +1,42 @@
-@model IEnumerable<TeamLocum.Web.Models.Holiday>
-
+@model IReadOnlyList<Holiday>
 @{
-    ViewData["Title"] = "Holidays Master";
+    ViewData["Title"] = "Bank holidays";
+    var isAdmin = User.IsInRole(Roles.Admin);
 }
 
-<h1>Holidays Master</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Bank holidays</h1>
+    @if (isAdmin)
+    {
+        <a class="btn btn-primary" asp-action="Create">Add a bank holiday</a>
+    }
+</div>
+<p class="text-muted">Shifts that fall on these dates are flagged so hospitals and doctors can agree premium rates. They are never blocked.</p>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Add Holiday</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Details</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>@item.Date.ToShortDateString()</td>
-            <td>@item.Details</td>
-        </tr>
+@if (Model.Count == 0)
+{
+    <p class="text-muted">No bank holidays are listed.</p>
 }
-    </tbody>
-</table>
+else
+{
+    <table class="table align-middle">
+        <thead><tr><th>Date</th><th>Holiday</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var holiday in Model)
+            {
+                <tr>
+                    <td>@UiHelpers.Date(holiday.Date)</td>
+                    <td>@holiday.Details</td>
+                    <td class="text-end">
+                        @if (isAdmin)
+                        {
+                            <form asp-action="Delete" asp-route-id="@holiday.Id" method="post">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

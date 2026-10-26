@@ -1,73 +1,92 @@
+@model HomeViewModel
 @{
     ViewData["Title"] = "Home";
 }
 
-@if (User.Identity != null && User.Identity.IsAuthenticated)
+@if (Model.Actor is { } actor)
 {
-    <div class="p-4 mb-4 bg-success bg-opacity-10 border border-success rounded-3">
-        <h4 class="text-success">Welcome back, @User.Identity.Name!</h4>
-        @if (User.IsInRole("Admin"))
-        {
-            <p class="mb-2">You are logged in as <strong>Admin</strong>. You have full access to manage hospitals, doctors, bookings, and bank holidays.</p>
-            <a asp-controller="Bookings" asp-action="Index" class="btn btn-primary me-2"><i class="bi bi-card-list me-1"></i>View Bookings</a>
-            <a asp-controller="Clients" asp-action="Index" class="btn btn-outline-primary me-2"><i class="bi bi-building me-1"></i>Manage Hospitals</a>
-            <a asp-controller="Locums" asp-action="Index" class="btn btn-outline-primary"><i class="bi bi-people me-1"></i>Manage Doctors</a>
-        }
-        else if (User.IsInRole("Client"))
-        {
-            <p class="mb-2">You are logged in as <strong>Hospital</strong>. You can view and manage your staffing bookings.</p>
-            <a asp-controller="Bookings" asp-action="Index" class="btn btn-primary me-2"><i class="bi bi-card-list me-1"></i>View Bookings</a>
-            <a asp-controller="Locums" asp-action="Index" class="btn btn-outline-primary"><i class="bi bi-search me-1"></i>Find Doctors</a>
-        }
-        else if (User.IsInRole("Locum"))
-        {
-            <p class="mb-2">You are logged in as <strong>Locum Doctor</strong>. You can view available shifts and manage your schedule.</p>
-            <a asp-controller="Bookings" asp-action="Index" class="btn btn-primary"><i class="bi bi-calendar2-week me-1"></i>View My Shifts</a>
-        }
+    <section class="mb-4">
+        <h1 class="h3">Welcome back</h1>
+        <p class="text-muted">
+            @if (actor.IsAdmin) { <text>You are signed in as an administrator: approve hospitals and doctors, and oversee every shift.</text> }
+            else if (actor.IsClient) { <text>You are signed in as a hospital or clinic: post shifts, review applicants and fill them.</text> }
+            else { <text>You are signed in as a locum doctor: find open shifts and apply for the ones that suit you.</text> }
+        </p>
+
+        <div class="row row-cols-1 row-cols-md-4 g-3 mb-3">
+            @foreach (var item in Model.Items)
+            {
+                <div class="col">
+                    <a class="card h-100 text-decoration-none" asp-controller="@item.Controller" asp-action="@item.Action">
+                        <div class="card-body">
+                            <div class="display-6">@item.Value</div>
+                            <div class="text-muted">@item.Label</div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+            @if (actor.CanPostShifts)
+            {
+                <a class="btn btn-primary" asp-controller="Bookings" asp-action="Create">Post a shift</a>
+            }
+            @if (actor.IsLocum)
+            {
+                <a class="btn btn-primary" asp-controller="Bookings" asp-action="Index" asp-route-scope="Open">Browse open shifts</a>
+                <a class="btn btn-outline-primary" asp-controller="Locums" asp-action="Profile">Update my profile</a>
+            }
+            @if (actor.IsClient)
+            {
+                <a class="btn btn-outline-primary" asp-controller="Locums" asp-action="Index">Find doctors</a>
+            }
+            @if (actor.IsAdmin)
+            {
+                <a class="btn btn-outline-primary" asp-controller="Clients" asp-action="Index" asp-route-status="AwaitingReview">Review hospitals</a>
+                <a class="btn btn-outline-primary" asp-controller="Locums" asp-action="Index" asp-route-status="PendingReview">Review doctors</a>
+            }
+        </div>
+    </section>
+}
+else
+{
+    <section class="py-5 text-center">
+        <h1 class="display-5 fw-bold">TeamLocum</h1>
+        <p class="lead col-lg-7 mx-auto">
+            A staffing platform that connects locum doctors with hospitals and clinics. Hospitals post shifts, approved doctors
+            apply, and the platform makes sure no doctor is ever booked into two overlapping shifts.
+        </p>
+        <p>
+            <a class="btn btn-primary btn-lg me-2" asp-area="Identity" asp-page="/Account/Register">Create an account</a>
+            <a class="btn btn-outline-primary btn-lg" asp-area="Identity" asp-page="/Account/Login">Sign in</a>
+        </p>
+    </section>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Hospitals and clinics</h2>
+                    <p class="text-muted mb-0">Post a shift with its specialty, location and rate. Review applicants ranked by a transparent score and fill the shift in one step.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Locum doctors</h2>
+                    <p class="text-muted mb-0">Keep one profile with your specialties, base and minimum rate. Apply for open shifts; clashes with shifts you already hold are refused.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Vetted accounts</h2>
+                    <p class="text-muted mb-0">Every hospital and doctor is approved by an administrator before they can post or work shifts. Each role sees only its own data.</p>
+                </div>
+            </div>
+        </div>
     </div>
 }
-
-<div class="px-4 py-5 my-2 text-center">
-    <div class="fs-1 mb-3 text-primary"><i class="bi bi-heart-pulse-fill"></i></div>
-    <h1 class="display-5 fw-bold text-body-emphasis">TeamLocum</h1>
-    <div class="col-lg-6 mx-auto">
-        <p class="lead mb-4">
-            A Healthcare Staffing Management Platform connecting <strong>locum doctors</strong> with <strong>hospitals and clinics</strong>.
-            Built with ASP.NET Core MVC, Entity Framework Core, and Role-Based Access Control.
-        </p>
-        @if (User.Identity == null || !User.Identity.IsAuthenticated)
-        {
-            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary btn-lg px-5 me-2">Login</a>
-        }
-    </div>
-</div>
-
-<div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
-    <div class="col">
-        <div class="card h-100 border-primary">
-            <div class="card-body text-center">
-                <div class="fs-2 mb-2 text-primary"><i class="bi bi-person-badge"></i></div>
-                <h5 class="card-title">Locum Doctors</h5>
-                <p class="card-text text-muted">Browse available shifts, apply for bookings, manage your schedule with zero double-booking thanks to automated conflict detection.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card h-100 border-success">
-            <div class="card-body text-center">
-                <div class="fs-2 mb-2 text-success"><i class="bi bi-hospital"></i></div>
-                <h5 class="card-title">Hospitals & Clinics</h5>
-                <p class="card-text text-muted">Post shifts, review doctor applications, manage bookings, and track CARAS accreditation status — all in one place.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card h-100 border-danger">
-            <div class="card-body text-center">
-                <div class="fs-2 mb-2 text-danger"><i class="bi bi-shield-lock"></i></div>
-                <h5 class="card-title">Role-Based Access</h5>
-                <p class="card-text text-muted">3 roles (Admin / Hospital / Doctor) powered by ASP.NET Identity. Each role sees only what they need — no data leaks.</p>
-            </div>
-        </div>
-    </div>
-</div>

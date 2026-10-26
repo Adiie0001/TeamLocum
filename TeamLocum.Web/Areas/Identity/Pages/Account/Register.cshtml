@@ -1,0 +1,115 @@
+@page
+@model TeamLocum.Web.Areas.Identity.Pages.Account.RegisterModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Register";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <h1 class="h3 mb-1">Create an account</h1>
+        <p class="text-muted">Hospitals post shifts and doctors apply for them. An administrator approves every new account before it can be used for staffing.</p>
+
+        <form method="post" asp-route-returnUrl="@Model.ReturnUrl" id="register-form">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Input.AccountType" class="form-label"></label>
+                <select asp-for="Input.AccountType" class="form-select" id="account-type">
+                    <option value="">Choose…</option>
+                    <option value="@((int)TeamLocum.Web.Areas.Identity.Pages.Account.AccountType.Hospital)">Hospital or clinic</option>
+                    <option value="@((int)TeamLocum.Web.Areas.Identity.Pages.Account.AccountType.Doctor)">Locum doctor</option>
+                </select>
+                <span asp-validation-for="Input.AccountType" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.FirstName" class="form-label"></label>
+                    <input asp-for="Input.FirstName" class="form-control" autocomplete="given-name" />
+                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.LastName" class="form-label"></label>
+                    <input asp-for="Input.LastName" class="form-control" autocomplete="family-name" />
+                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label">Email</label>
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.Password" class="form-label">Password</label>
+                    <input asp-for="Input.Password" class="form-control" autocomplete="new-password" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.ConfirmPassword" class="form-label"></label>
+                    <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+            </div>
+            <p class="form-text">At least 10 characters with an upper-case letter, a lower-case letter and a digit.</p>
+
+            <fieldset class="border rounded p-3 mb-3" data-account-section="1">
+                <legend class="float-none w-auto px-2 fs-6">Hospital or clinic</legend>
+                <div class="mb-3">
+                    <label asp-for="Input.CompanyName" class="form-label"></label>
+                    <input asp-for="Input.CompanyName" class="form-control" />
+                    <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
+                </div>
+                <div class="mb-0">
+                    <label asp-for="Input.CarasId" class="form-label"></label>
+                    <input asp-for="Input.CarasId" class="form-control" />
+                    <span asp-validation-for="Input.CarasId" class="text-danger"></span>
+                </div>
+            </fieldset>
+
+            <fieldset class="border rounded p-3 mb-3" data-account-section="2">
+                <legend class="float-none w-auto px-2 fs-6">Locum doctor</legend>
+                <div class="mb-3">
+                    <label asp-for="Input.GmcNumber" class="form-label"></label>
+                    <input asp-for="Input.GmcNumber" class="form-control" inputmode="numeric" maxlength="7" />
+                    <span asp-validation-for="Input.GmcNumber" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Specialties" class="form-label"></label>
+                    <input asp-for="Input.Specialties" class="form-control" placeholder="General practice, Paediatrics" />
+                    <span asp-validation-for="Input.Specialties" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.BaseLocation" class="form-label"></label>
+                    <input asp-for="Input.BaseLocation" class="form-control" placeholder="Leicester" />
+                    <span asp-validation-for="Input.BaseLocation" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-0">
+                        <label asp-for="Input.MinRatePerHour" class="form-label"></label>
+                        <input asp-for="Input.MinRatePerHour" class="form-control" type="number" step="0.01" min="0" />
+                        <span asp-validation-for="Input.MinRatePerHour" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-0">
+                        <label asp-for="Input.YearsExperience" class="form-label"></label>
+                        <input asp-for="Input.YearsExperience" class="form-control" type="number" min="0" max="60" />
+                        <span asp-validation-for="Input.YearsExperience" class="text-danger"></span>
+                    </div>
+                </div>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary w-100">Create account</button>
+        </form>
+
+        <p class="mt-3 text-muted">Already registered? <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Sign in</a>.</p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/register.js" asp-append-version="true"></script>
+}

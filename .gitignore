@@ -1,9 +1,17 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+coverage/
+TestResults/
 
-# SQLite DB file
+# Local databases, keys and environment
 *.db
+*.db-shm
+*.db-wal
+.env
+appsettings.Local.json
+keys/
 
-bin/
-obj/
-run_logs.txt
-run_err.txt
-clean.py
+# IDE
+.vs/
+*.user

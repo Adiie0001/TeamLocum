@@ -1,6 +1,32 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "Privacy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<h1 class="h3">Privacy</h1>
+<p class="text-muted">This is a portfolio demonstration, not a live service. The notes below describe what the software does.</p>
+
+<h2 class="h5 mt-4">What is stored</h2>
+<ul>
+    <li>Account data: name, email address and a salted password hash (never the password).</li>
+    <li>Doctors: GMC number, specialties, base location, minimum hourly rate and years of experience.</li>
+    <li>Hospitals: organisation name and an optional accreditation reference.</li>
+    <li>Shifts, applications and their status changes.</li>
+</ul>
+
+<h2 class="h5 mt-4">Who can see it</h2>
+<ul>
+    <li>Administrators see everything.</li>
+    <li>A hospital sees its own shifts and applicants, and the approved doctors directory (including GMC numbers, which are public on the GMC register).</li>
+    <li>A doctor sees open shifts, their own applications and their own profile. Doctors never see other doctors.</li>
+</ul>
+
+<h2 class="h5 mt-4">Cookies and third parties</h2>
+<p>Three first-party cookies keep you signed in and protect forms from forgery. No analytics, advertising or third-party scripts are loaded.</p>
+<p>
+    An optional AI ranking can be switched on by the operator. When it is, only anonymised professional attributes
+    (specialty, base location, minimum rate, years of experience) are sent: never names, GMC numbers, email addresses,
+    hospital names or shift notes. By default nothing leaves the server.
+</p>
+
+<h2 class="h5 mt-4">Your data</h2>
+<p>There is no self-service export or deletion yet. Ask an administrator to change or remove an account.</p>

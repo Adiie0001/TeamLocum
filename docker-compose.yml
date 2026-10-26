@@ -1,0 +1,28 @@
+services:
+  web:
+    build: .
+    image: teamlocum:local
+    ports:
+      # For trying it on one machine. Before exposing it further, put a TLS-terminating reverse proxy in front and publish
+      # nothing else: the image trusts the X-Forwarded-* headers it receives.
+      - "127.0.0.1:8080:8080"
+    environment:
+      # Required: the first administrator, created once if the database has none. See .env.example.
+      Seed__AdminEmail: ${ADMIN_EMAIL:?Set ADMIN_EMAIL in .env (see .env.example)}
+      Seed__AdminPassword: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env (see .env.example)}
+      Clinic__TimeZone: ${CLINIC_TIME_ZONE:-Europe/London}
+      # Optional AI ranking of doctors. Off by default: with it off nothing leaves the server.
+      Matching__Gemini__Enabled: ${GEMINI_ENABLED:-false}
+      Matching__Gemini__ApiKey: ${GEMINI_API_KEY:-}
+    volumes:
+      - web-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080 && printf \"GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3 && grep -q \"200 OK\" <&3'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  web-data:

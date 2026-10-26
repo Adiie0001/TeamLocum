@@ -1,220 +1,140 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using TeamLocum.Web.Data;
-using TeamLocum.Web.Models;
+using TeamLocum.Web.Domain;
+using TeamLocum.Web.Services;
+using TeamLocum.Web.ViewModels;
 
-namespace TeamLocum.Web.Controllers
+namespace TeamLocum.Web.Controllers;
+
+[Authorize]
+public class BookingsController(BookingService bookings, DirectoryService directory, IActorAccessor actors) : Controller
 {
-    [Authorize]
-    public class BookingsController : Controller
+    private const string Posters = Roles.Admin + "," + Roles.Client;
+
+    [HttpGet]
+    public async Task<IActionResult> Index([FromQuery] BookingListQuery query, CancellationToken ct)
     {
-        private readonly ApplicationDbContext _context;
-        private readonly TeamLocum.Web.Services.IAiMatchingService _aiMatchingService;
+        var actor = await actors.RequireAsync(ct);
+        var result = await bookings.ListAsync(actor, query, ct);
+        return View(new BookingIndexViewModel(actor, query, result));
+    }
 
-        public BookingsController(ApplicationDbContext context, TeamLocum.Web.Services.IAiMatchingService aiMatchingService)
+    [HttpGet]
+    public async Task<IActionResult> Details(int id, CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        var details = await bookings.GetAsync(actor, id, ct);
+        var matches = details.Permissions.CanAssign ? await bookings.MatchesAsync(actor, id, ct) : null;
+        return View(new BookingDetailsViewModel(actor, details, matches));
+    }
+
+    [HttpGet]
+    [Authorize(Roles = Posters)]
+    public async Task<IActionResult> Create(CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        var start = DateTime.Today.AddDays(7).AddHours(9);
+        var input = new BookingInput { StartsAt = start, EndsAt = start.AddHours(8), RatePerHour = 80m };
+        return View("Form", await FormModelAsync(actor, input, isEdit: false, ct));
+    }
+
+    [HttpPost]
+    [Authorize(Roles = Posters)]
+    public async Task<IActionResult> Create([Bind(Prefix = "Input")] BookingInput input, CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        if (ModelState.IsValid)
         {
-            _context = context;
-            _aiMatchingService = aiMatchingService;
+            try
+            {
+                var saved = await bookings.CreateAsync(actor, input, ct);
+                TempData["Success"] = "Shift posted. Doctors can now apply.";
+                return RedirectToAction(nameof(Details), new { id = saved.Id });
+            }
+            catch (DomainException ex) when (ex is not (NotFoundException or ForbiddenException))
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
         }
 
-        public async Task<IActionResult> Index()
+        return View("Form", await FormModelAsync(actor, input, isEdit: false, ct));
+    }
+
+    [HttpGet]
+    [Authorize(Roles = Posters)]
+    public async Task<IActionResult> Edit(int id, CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        var input = await bookings.GetForEditAsync(actor, id, ct);
+        return View("Form", await FormModelAsync(actor, input, isEdit: true, ct, id));
+    }
+
+    [HttpPost]
+    [Authorize(Roles = Posters)]
+    public async Task<IActionResult> Edit(int id, [Bind(Prefix = "Input")] BookingInput input, CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        if (ModelState.IsValid)
         {
-            var bookings = _context.Bookings.Include(b => b.Client).Include(b => b.Locum);
-            return View(await bookings.ToListAsync());
+            try
+            {
+                await bookings.UpdateAsync(actor, id, input, ct);
+                TempData["Success"] = "Shift updated.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+            catch (DomainException ex) when (ex is not (NotFoundException or ForbiddenException))
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
         }
 
-        public IActionResult Create()
+        return View("Form", await FormModelAsync(actor, input, isEdit: true, ct, id));
+    }
+
+    [HttpPost]
+    public Task<IActionResult> Cancel(int id, CancellationToken ct) =>
+        Act(id, "Shift cancelled.", (actor, token) => bookings.CancelAsync(actor, id, token), ct);
+
+    [HttpPost]
+    public Task<IActionResult> Complete(int id, CancellationToken ct) =>
+        Act(id, "Shift marked as completed.", (actor, token) => bookings.CompleteAsync(actor, id, token), ct);
+
+    [HttpPost]
+    public Task<IActionResult> Release(int id, CancellationToken ct) =>
+        Act(id, "The doctor was released and the shift is open again.", (actor, token) => bookings.ReleaseAsync(actor, id, token), ct);
+
+    [HttpPost]
+    public Task<IActionResult> Assign(int id, int locumId, Guid stamp, CancellationToken ct) =>
+        Act(id, "Doctor assigned. The shift is filled.", (actor, token) => bookings.AssignAsync(actor, id, locumId, stamp, token), ct);
+
+    [HttpPost]
+    public Task<IActionResult> Apply(int id, string? message, CancellationToken ct) =>
+        Act(id, "Application sent. The hospital will review it.", (actor, token) => bookings.ApplyAsync(actor, id, message, token), ct);
+
+    [HttpPost]
+    public Task<IActionResult> Withdraw(int id, CancellationToken ct) =>
+        Act(id, "Application withdrawn.", (actor, token) => bookings.WithdrawAsync(actor, id, token), ct);
+
+    private async Task<IActionResult> Act(int id, string success, Func<Actor, CancellationToken, Task> action, CancellationToken ct)
+    {
+        var actor = await actors.RequireAsync(ct);
+        await action(actor, ct);
+        TempData["Success"] = success;
+        return RedirectToAction(nameof(Details), new { id });
+    }
+
+    private async Task<BookingFormViewModel> FormModelAsync(
+        Actor actor, BookingInput input, bool isEdit, CancellationToken ct, int? id = null)
+    {
+        IReadOnlyList<SelectListItem> clients = [];
+        if (actor.IsAdmin && !isEdit)
         {
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName");
-            return View();
+            clients = (await directory.ListClientsAsync(actor, ClientStatus.Accepted, ct))
+                .Select(c => new SelectListItem(c.CompanyName, c.Id.ToString(), c.Id == input.ClientId))
+                .ToList();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ClientId,LocumId,Date,StartTime,EndTime,RatePerHour,Location,Notes")] Booking booking)
-        {
-            if (ModelState.IsValid)
-            {
-                // Set status based on locum assignment
-                booking.Status = booking.LocumId.HasValue ? "Filled" : "Open";
-                _context.Add(booking);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", booking.ClientId);
-            return View(booking);
-        }
-
-        // Automated Job Matching: Get available locums for a specific time slot
-        [HttpGet]
-        public async Task<IActionResult> GetAvailableLocums(DateTime date, string startTime, string endTime)
-        {
-            if (!TimeSpan.TryParse(startTime, out var start) || !TimeSpan.TryParse(endTime, out var end))
-            {
-                return BadRequest("Invalid time format");
-            }
-
-            // Get all active locums
-            var allLocums = await _context.Locums
-                .Include(l => l.User)
-                .Where(l => l.Status == "Active" || l.Status == "Accepted")
-                .ToListAsync();
-
-            // Get all bookings for the specified date
-            var existingBookings = await _context.Bookings
-                .Where(b => b.Date.Date == date.Date && b.LocumId.HasValue)
-                .ToListAsync();
-
-            // Filter out locums with conflicting bookings
-            var conflictFreeLocums = allLocums.Where(locum =>
-            {
-                var locumBookings = existingBookings.Where(b => b.LocumId == locum.Id);
-                
-                // Check for time overlap: (NewStart < ExistingEnd) AND (NewEnd > ExistingStart)
-                foreach (var booking in locumBookings)
-                {
-                    if (start < booking.EndTime && end > booking.StartTime)
-                    {
-                        return false; // Conflict found
-                    }
-                }
-                return true; // No conflicts
-            }).ToList();
-
-            // Run conflict-free locums through AI Matching Service
-            // Dummy notes and location for the API endpoint (in a real scenario, these would come from the frontend input)
-            var aiResults = await _aiMatchingService.CalculateMatchScoresAsync(conflictFreeLocums, "General ward coverage", "Main Hospital");
-
-            var availableLocums = aiResults.Select(r => {
-                var l = conflictFreeLocums.First(locum => locum.Id == r.LocumId);
-                return new
-                {
-                    id = l.Id,
-                    name = $"{l.User.FirstName} {l.User.LastName}",
-                    gmcNumber = l.GmcNumber ?? "N/A",
-                    aiScore = r.MatchScore,
-                    aiReasoning = r.MatchReasoning
-                };
-            }).ToList();
-
-            return Json(availableLocums);
-        }
-    
-public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var booking = await _context.Bookings
-                .Include(b => b.Client)
-                .Include(b => b.Locum)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (booking == null)
-            {
-                return NotFound();
-            }
-
-            return View(booking);
-        }
-
-        // GET: Bookings/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var booking = await _context.Bookings.FindAsync(id);
-            if (booking == null)
-            {
-                return NotFound();
-            }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", booking.ClientId);
-            ViewData["LocumId"] = new SelectList(_context.Locums, "Id", "GmcNumber", booking.LocumId);
-            return View(booking);
-        }
-
-        // POST: Bookings/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ClientId,LocumId,Date,StartTime,EndTime,RatePerHour,Location,Status,Notes")] Booking booking)
-        {
-            if (id != booking.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(booking);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BookingExists(booking.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", booking.ClientId);
-            ViewData["LocumId"] = new SelectList(_context.Locums, "Id", "GmcNumber", booking.LocumId);
-            return View(booking);
-        }
-
-        // GET: Bookings/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var booking = await _context.Bookings
-                .Include(b => b.Client)
-                .Include(b => b.Locum)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (booking == null)
-            {
-                return NotFound();
-            }
-
-            return View(booking);
-        }
-
-        // POST: Bookings/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var booking = await _context.Bookings.FindAsync(id);
-            if (booking != null)
-            {
-                _context.Bookings.Remove(booking);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool BookingExists(int id)
-        {
-            return _context.Bookings.Any(e => e.Id == id);
-        }
-    
+        return new BookingFormViewModel(input, isEdit, id, clients);
     }
 }
-
-

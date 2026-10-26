@@ -1,0 +1,6 @@
+@{
+    // Every Identity page, including the account management pages, sits inside the application's own layout instead of
+    // the framework's stand-alone one (which would also need a _LoginPartial and would load its own stylesheet).
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["ParentLayout"] = "/Views/Shared/_Layout.cshtml";
+}
