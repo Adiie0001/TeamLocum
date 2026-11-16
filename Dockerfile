@@ -8,7 +8,7 @@ RUN dotnet restore TeamLocum.Web/TeamLocum.Web.csproj
 COPY TeamLocum.Web TeamLocum.Web
 RUN dotnet publish TeamLocum.Web/TeamLocum.Web.csproj -c Release -o /app/publish --no-restore -p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:11.0 AS runtime
 WORKDIR /app
 
 # The default (Debian-based) image ships ICU and tzdata, which the app needs: it formats dates and money for en-GB and
