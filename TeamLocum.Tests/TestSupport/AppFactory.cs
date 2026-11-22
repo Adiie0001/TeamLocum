@@ -25,7 +25,23 @@ public sealed class AppFactory : WebApplicationFactory<Program>
 
     public const string GeminiKey = "test-gemini-key-0123456789";
 
-    private readonly string _databasePath = Path.Combine(Path.GetTempPath(), $"teamlocum-test-{Guid.NewGuid():N}.db");
+    private static string ResolveTempDirectory()
+    {
+        try
+        {
+            var tempPath = Path.GetTempPath();
+            var probe = Path.Combine(tempPath, $"probe-{Guid.NewGuid():N}.tmp");
+            File.WriteAllText(probe, "ok");
+            File.Delete(probe);
+            return tempPath;
+        }
+        catch
+        {
+            return AppContext.BaseDirectory;
+        }
+    }
+
+    private readonly string _databasePath = Path.Combine(ResolveTempDirectory(), $"teamlocum-test-{Guid.NewGuid():N}.db");
     private readonly Dictionary<string, string?> _settings;
     private readonly string _environment;
     private int _sequence;
@@ -42,6 +58,7 @@ public sealed class AppFactory : WebApplicationFactory<Program>
         {
             ["ConnectionStrings:DefaultConnection"] = $"Data Source={_databasePath}",
             ["Database:ApplyMigrationsOnStartup"] = "true",
+            ["DataProtection:KeysPath"] = Path.Combine(ResolveTempDirectory(), "keys"),
             ["Seed:AdminEmail"] = AdminEmail,
             ["Seed:AdminPassword"] = AdminPassword,
             ["RateLimiting:Enabled"] = "false",
