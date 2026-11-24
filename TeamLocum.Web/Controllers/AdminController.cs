@@ -2,11 +2,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamLocum.Web.Domain;
 using TeamLocum.Web.Services;
+using TeamLocum.Web.Services.Schema;
 
 namespace TeamLocum.Web.Controllers;
 
 [Authorize(Roles = Roles.Admin)]
-public class AdminController(DirectoryService directory, IActorAccessor actors) : Controller
+public class AdminController(
+    DirectoryService directory,
+    IActorAccessor actors,
+    ISchemaDiscoveryService schemaService) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index(CancellationToken ct)
@@ -20,6 +24,14 @@ public class AdminController(DirectoryService directory, IActorAccessor actors) 
     {
         var actor = await actors.RequireAsync(ct);
         return View(await directory.ListUsersAsync(actor, ct));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Schema(CancellationToken ct)
+    {
+        await actors.RequireAsync(ct);
+        var schema = await schemaService.DiscoverSchemaAsync(ct);
+        return View(schema);
     }
 
     [HttpPost]

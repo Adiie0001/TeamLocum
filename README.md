@@ -38,6 +38,8 @@ one filled, three open, one of them overnight), applications and the 2026–27 E
 | URL | What |
 |---|---|
 | http://localhost:5115 | The application |
+| http://localhost:5115/Admin/Schema | Interactive zero-model dynamic schema inspector (Admin) |
+| http://localhost:5115/api/schema/discovery | Raw JSON database catalog reflection endpoint |
 | http://localhost:5115/health/live | Liveness: the process is up (no database access) |
 | http://localhost:5115/health/ready | Readiness: the database is reachable (503 otherwise) |
 

@@ -13,6 +13,7 @@ using TeamLocum.Web.Domain;
 using TeamLocum.Web.Infrastructure.Options;
 using TeamLocum.Web.Services;
 using TeamLocum.Web.Services.Matching;
+using TeamLocum.Web.Services.Schema;
 
 namespace TeamLocum.Web.Infrastructure.Startup;
 
@@ -139,6 +140,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IActorAccessor, ActorAccessor>();
         services.AddScoped<BookingService>();
         services.AddScoped<DirectoryService>();
+        services.AddScoped<ISchemaDiscoveryService, DynamicSchemaDiscoveryService>();
     }
 
     private static void AddMatching(this IServiceCollection services)

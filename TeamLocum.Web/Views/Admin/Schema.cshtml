@@ -1,0 +1,121 @@
+@model TeamLocum.Web.Services.Schema.SchemaDiscoveryResponseDto
+@{
+    ViewData["Title"] = "Database Schema Inspector";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Database Schema Inspector</h1>
+        <p class="text-muted small mb-0">Zero-model dynamic reflection of healthcare database tables, columns, constraints and relationships.</p>
+    </div>
+    <div>
+        <a class="btn btn-outline-info btn-sm" href="/api/schema/discovery" target="_blank">Raw JSON API</a>
+        <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Back to Admin</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm border-0 bg-light">
+            <div class="text-muted small">Database Engine</div>
+            <div class="h5 mb-0 font-monospace">@Model.Engine</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm border-0 bg-light">
+            <div class="text-muted small">Database File</div>
+            <div class="h5 mb-0 font-monospace text-truncate">@Model.DatabaseName</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm border-0 bg-light">
+            <div class="text-muted small">Discovered Tables</div>
+            <div class="h5 mb-0 text-primary">@Model.TotalTables</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm border-0 bg-light">
+            <div class="text-muted small">Discovered Views</div>
+            <div class="h5 mb-0 text-secondary">@Model.TotalViews</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    @foreach (var table in Model.Tables)
+    {
+        <div class="col-12">
+            <div class="card shadow-sm border">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+                    <div>
+                        <span class="badge @(table.Type == "TABLE" ? "bg-primary" : "bg-secondary") me-2">@table.Type</span>
+                        <strong class="font-monospace h6 mb-0">@table.Name</strong>
+                    </div>
+                    <div>
+                        <span class="badge bg-light text-dark border">@table.RowCount rows</span>
+                        <span class="badge bg-light text-dark border">@table.Columns.Count cols</span>
+                        @if (table.ForeignKeys.Count > 0)
+                        {
+                            <span class="badge bg-info text-dark">@table.ForeignKeys.Count FKs</span>
+                        }
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light small">
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th>Column Name</th>
+                                    <th>Data Type</th>
+                                    <th>Constraints</th>
+                                    <th>Default Value</th>
+                                </tr>
+                            </thead>
+                            <tbody class="small font-monospace">
+                                @foreach (var col in table.Columns)
+                                {
+                                    <tr>
+                                        <td>@col.OrdinalPosition</td>
+                                        <td>
+                                            @col.Name
+                                            @if (col.IsPrimaryKey)
+                                            {
+                                                <span class="badge bg-warning text-dark ms-1">PK</span>
+                                            }
+                                        </td>
+                                        <td>@col.DataType</td>
+                                        <td>
+                                            @if (col.IsNullable)
+                                            {
+                                                <span class="text-muted">NULL</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-danger fw-bold">NOT NULL</span>
+                                            }
+                                        </td>
+                                        <td class="text-muted">@(col.DefaultValue ?? "-")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (table.ForeignKeys.Count > 0)
+                    {
+                        <div class="p-2 border-top bg-light small">
+                            <span class="fw-bold me-2">Foreign Keys:</span>
+                            @foreach (var fk in table.ForeignKeys)
+                            {
+                                <span class="badge bg-white text-dark border me-1 font-monospace">
+                                    @fk.FromColumn &rarr; @fk.TargetTable.@fk.TargetColumn
+                                </span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
